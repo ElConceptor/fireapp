@@ -1,0 +1,8 @@
+{
+  "name": "fireapp",
+  "app_id": "9600d68e",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}
