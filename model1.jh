@@ -1,0 +1,89 @@
+entity BusinessApplication {
+	id String,
+    businessNAme String
+    
+}
+
+entity VendorApplication {
+	vendor String,
+    currentVersion String
+}
+
+entity BusinessBlock{
+	name String,
+    description String,
+    
+}
+entity Capacity {
+    name String, 
+    description String 
+}
+entity BusinessDATA {
+	name String,
+    description String
+}
+
+entity FunctionalBlock{
+  name String
+}
+
+// an ignored comment
+/** not an ignored comment */
+entity Project {
+    id String required,
+    id String ,
+    
+    
+	}
+
+entity Iteration {
+	name String required,
+    delivery Date
+    
+}
+
+entity Interface {
+  name  String,
+  version  String
+}
+
+
+relationship OneToOne {
+	BusinessApplication{region} to VendorApplication
+}
+
+relationship OneToMany {
+	BusinessBlock{composed} to BusinessBlock,
+    BusinessBlock{expose} to Interface,
+    Iteration{request} to Interface
+    
+}
+relationship OneToMany {
+	Project{composed} to Iteration
+}
+
+relationship OneToMany {
+	Iteration{impact} to BusinessApplication
+}
+
+
+relationship OneToMany {
+	FunctionalBlock{impact} to Capacity
+}
+
+
+relationship OneToMany {
+	BusinessBlock{impact} to Capacity
+}
+
+
+relationship OneToMany {
+	Capacity{deliverd} to BusinessApplication
+}
+
+relationship OneToMany {
+	BusinessBlock{own} to BusinessDATA
+}
+
+// Set an angular suffix
+angularSuffix * with gsz
