@@ -93,3 +93,5 @@ d action, avec validation humaine et suivi strict des couts.
   `sass`, puis script `patch-node-sass` avant build/lint.
 - Observation: eviter `npm run` imbrique dans les scripts, car la dependance
   historique `npm@5.8.0` du projet prend le dessus et ne supporte pas Node 22.
+- Observation: Dart Sass parse plus strictement les chaines multi-lignes de
+  `ionic.functions.scss`; le script de patch normalise ces messages d erreur.
