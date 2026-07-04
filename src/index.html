@@ -1,49 +1,127 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-  <meta charset="UTF-8">
-  <title>Ionic App</title>
-  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="format-detection" content="telephone=no">
-  <meta name="msapplication-tap-highlight" content="no">
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agentic Marketing & Sales SaaS</title>
+    <meta
+      name="description"
+      content="Prototype propre d un SaaS agentique pour marketing et sales."
+    >
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="shell-header">
+      <a class="brand" href="#top" aria-label="Retour accueil">
+        <span class="brand-mark">A</span>
+        <span>
+          <strong>Agentic GTM</strong>
+          <small>Marketing & Sales SaaS</small>
+        </span>
+      </a>
+      <nav aria-label="Navigation principale">
+        <a href="#mission">Mission</a>
+        <a href="#agents">Agents</a>
+        <a href="#modules">Modules</a>
+        <a href="#agenda">Agenda</a>
+      </nav>
+    </header>
 
-  <link rel="icon" type="image/x-icon" href="assets/icon/favicon.ico">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4e8ef7">
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Base propre creee aujourd hui</p>
+          <h1>Un SaaS qui orchestre une equipe IA pour vendre mieux.</h1>
+          <p>
+            Le produit comprend les offres du souscripteur, organise les donnees dans
+            un Data Hub, coordonne des agents specialises et garde l humain dans la
+            boucle pour les decisions sensibles.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#mission">Voir la mission</a>
+            <a class="button secondary" href="./../docs/project-agenda.md">Agenda projet</a>
+          </div>
+        </div>
+        <aside class="command-card" aria-label="Synthese de mission">
+          <span class="status-dot"></span>
+          <p class="eyebrow">Mission active</p>
+          <h2>Comprendre le produit et proposer le premier plan GTM</h2>
+          <dl>
+            <div>
+              <dt>Budget IA</dt>
+              <dd>1 850 EUR</dd>
+            </div>
+            <div>
+              <dt>Validations</dt>
+              <dd>7</dd>
+            </div>
+            <div>
+              <dt>Artefacts</dt>
+              <dd>42</dd>
+            </div>
+          </dl>
+        </aside>
+      </section>
 
-  <!-- add to homescreen for ios -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+      <section id="mission" class="section">
+        <div class="section-title">
+          <p class="eyebrow">Mission Control</p>
+          <h2>Workflow de vente controle par objectifs.</h2>
+        </div>
+        <div id="workflow" class="timeline"></div>
+      </section>
 
-  <!-- cordova.js required for cordova apps (remove if not needed) -->
-  <script src="cordova.js"></script>
+      <section id="agents" class="section">
+        <div class="section-title">
+          <p class="eyebrow">Equipe virtuelle</p>
+          <h2>Agents collaboratifs avec delegation de modeles.</h2>
+        </div>
+        <div id="agents-grid" class="card-grid"></div>
+      </section>
 
-  <!-- un-comment this code to enable service worker
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('service worker installed'))
-        .catch(err => console.error('Error', err));
-    }
-  </script>-->
+      <section class="section split">
+        <article class="panel">
+          <p class="eyebrow">Data Hub</p>
+          <h2>Memoire partagee et auditable.</h2>
+          <p>
+            Toutes les sources, hypotheses, decisions, couts et productions restent
+            rattaches au tenant, a la mission et au module qui les a crees.
+          </p>
+          <ul id="data-hub-list" class="check-list"></ul>
+        </article>
+        <article class="panel dark">
+          <p class="eyebrow">Gouvernance cout</p>
+          <h2>Chaque appel modele doit etre mesurable.</h2>
+          <p>
+            L orchestrateur choisit le modele selon la criticite: premium pour la
+            strategie, intermediaire pour l analyse, economique pour extraction et
+            variantes.
+          </p>
+        </article>
+      </section>
 
-  <link href="build/main.css" rel="stylesheet">
+      <section id="modules" class="section">
+        <div class="section-title">
+          <p class="eyebrow">Admin Console</p>
+          <h2>Modules activables par le souscripteur.</h2>
+        </div>
+        <div id="modules-grid" class="module-grid"></div>
+      </section>
 
-</head>
-<body>
+      <section id="agenda" class="section">
+        <div class="section-title">
+          <p class="eyebrow">Agenda projet</p>
+          <h2>Prochaines decisions de construction.</h2>
+        </div>
+        <div id="agenda-list" class="agenda-list"></div>
+      </section>
+    </main>
 
-  <!-- Ionic's root component and where the app will load -->
-  <ion-app></ion-app>
+    <footer>
+      <span>Agentic GTM SaaS</span>
+      <span>Prototype propre sans heritage legacy</span>
+    </footer>
 
-  <!-- The polyfills js is generated during the build process -->
-  <script src="build/polyfills.js"></script>
-
-  <!-- The vendor js is generated during the build process
-       It contains all of the dependencies in node_modules -->
-  <script src="build/vendor.js"></script>
-
-  <!-- The main bundle js is generated during the build process -->
-  <script src="build/main.js"></script>
-
-</body>
+    <script src="./app.js"></script>
+  </body>
 </html>

@@ -140,7 +140,7 @@ Mesures prioritaires:
 | Besoin | Option recommandee |
 | --- | --- |
 | Frontend SaaS final | Next.js, React, Tailwind, shadcn/ui |
-| Prototype existant | Ionic/Angular 5, sans ajout de dependance |
+| Prototype actuel | Web statique sans dependance, facile a remplacer |
 | Base relationnelle | PostgreSQL |
 | Recherche semantique | pgvector au depart, Qdrant si volume augmente |
 | Stockage fichiers | S3 compatible, Cloudflare R2, MinIO pour dev |
@@ -152,8 +152,8 @@ Mesures prioritaires:
 
 ## Feuille de route technique
 
-1. Stabiliser l application existante et retirer les erreurs de compilation.
-2. Creer un prototype UI: mission, architecture, admin modules.
+1. Garder une base propre sans heritage technique inutile.
+2. Consolider le prototype UI: mission, architecture, admin modules.
 3. Definir le modele de donnees multi-tenant et les evenements de cout.
 4. Implementer l upload documentaire et le Data Hub.
 5. Ajouter un orchestrateur simple avec agents specialises declaratifs.

@@ -8,31 +8,29 @@ d action, avec validation humaine et suivi strict des couts.
 
 ## Etat actuel
 
-- Prototype UI Ionic transforme en trois espaces:
-  - Mission Control;
-  - Architecture;
-  - Admin Console.
-- Documentation d architecture initiale ajoutee.
-- Verification TypeScript OK avec `tsc -p tsconfig.json --noEmit`.
-- Installation npm OK sous Node 22 avec scripts natifs ignores.
-- Build Ionic OK avec le shim local `node-sass` vers Dart Sass.
-- Lint Ionic OK; il reste uniquement des avertissements de depreciation venant
-  du socle Ionic 3 et de Sass.
+- Ancien prototype sans lien supprime du contenu suivi.
+- Nouveau prototype web statique cree dans `src/`.
+- Aucun framework legacy ni dependance externe dans `package.json`.
+- Documentation d architecture initiale ajoutee dans `docs/`.
+- Scripts projet:
+  - `npm run lint`: valide la base propre;
+  - `npm run build`: copie le prototype dans `dist/`;
+  - `npm run serve`: sert `dist/` ou `src/` localement.
 
 ## Agenda technique priorise
 
-### 1. Stabiliser la chaine de build
+### 1. Stabiliser la base propre
 
-- Statut: fait pour le prototype actuel sous Node 22.
-- Rester attentif aux avertissements Sass: ils signalent une dette de migration
-  Ionic 3, mais ne bloquent plus le build.
-- Documenter le runtime cible si le projet migre vers Next.js ou Ionic moderne.
+- Statut: fait pour le prototype statique actuel.
+- Garder le depot sans artefacts historiques ni dependances inutiles.
+- Ajouter une vraie stack applicative seulement quand les modeles de donnees et
+  les workflows sont decides.
 
 ### 2. Consolider le prototype SaaS
 
-- Ajouter une navigation plus produit si le socle Ionic est conserve.
 - Rendre la console admin interactive pour activer/desactiver les modules.
 - Ajouter une vue detail mission: objectifs, agents, decisions, artefacts.
+- Ajouter une vue couts IA: budget, consommation, alertes et arbitrages modele.
 
 ### 3. Definir le Data Hub
 
@@ -65,7 +63,7 @@ d action, avec validation humaine et suivi strict des couts.
 
 | Sujet | Decision a prendre | Risque |
 | --- | --- | --- |
-| Socle frontend | Continuer Ionic temporairement ou migrer Next.js | Ionic 3 ralentit le delivery SaaS moderne |
+| Socle frontend | Garder prototype statique ou passer a Next.js | Migrer trop tot avant le modele produit |
 | Orchestration | Vercel AI SDK, LangGraph ou orchestration maison | Trop d abstraction trop tot |
 | Vector store | pgvector ou Qdrant | Cout et complexite operationnelle |
 | MCP | Connecteurs natifs ou MCP generique | Permissions trop larges si mal gouvernees |
@@ -81,21 +79,3 @@ d action, avec validation humaine et suivi strict des couts.
 - Le souscripteur valide les decisions sensibles.
 - Le Data Hub conserve artefacts, decisions, sources et couts.
 - L admin peut activer/desactiver les modules et fixer des limites.
-
-## Journal de debug
-
-### Build Ionic
-
-- Symptome: `npm run build` echoue avant compilation applicative.
-- Cause: `node-sass@4.7.2` ne supporte pas Node 22.
-- Verification contournee: `tsc -p tsconfig.json --noEmit` passe.
-- Tentative 1: `overrides` npm vers Dart Sass. Resultat: le lockfile v1 a
-  encore resolu `node-sass@4.7.2`.
-- Tentative 2 en cours: `.npmrc` avec `ignore-scripts=true`, dependance
-  `sass`, puis script `patch-node-sass` avant build/lint.
-- Observation: eviter `npm run` imbrique dans les scripts, car la dependance
-  historique `npm@5.8.0` du projet prend le dessus et ne supporte pas Node 22.
-- Observation: Dart Sass parse plus strictement les chaines multi-lignes de
-  `ionic.functions.scss`; le script de patch normalise ces messages d erreur.
-- Resolution: `npm install`, `npm run build`, `npm run lint` et `tsc --noEmit`
-  passent dans l environnement courant.
