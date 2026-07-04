@@ -15,7 +15,8 @@ d action, avec validation humaine et suivi strict des couts.
 - Documentation d architecture initiale ajoutee.
 - Verification TypeScript OK avec `tsc -p tsconfig.json --noEmit`.
 - Build Ionic bloque par la dependance historique `node-sass@4.7.2` sous Node 22.
-- Correction en cours: remplacer `node-sass` par Dart Sass via `npm overrides`.
+- Correction en cours: installer sans scripts natifs et remplacer `node-sass`
+  par un shim local vers Dart Sass.
 
 ## Agenda technique priorise
 
@@ -86,4 +87,7 @@ d action, avec validation humaine et suivi strict des couts.
 - Symptome: `npm run build` echoue avant compilation applicative.
 - Cause: `node-sass@4.7.2` ne supporte pas Node 22.
 - Verification contournee: `tsc -p tsconfig.json --noEmit` passe.
-- Action en cours: utiliser `overrides` pour resoudre `node-sass` vers Dart Sass.
+- Tentative 1: `overrides` npm vers Dart Sass. Resultat: le lockfile v1 a
+  encore resolu `node-sass@4.7.2`.
+- Tentative 2 en cours: `.npmrc` avec `ignore-scripts=true`, dependance
+  `sass`, puis script `patch-node-sass` avant build/lint.
