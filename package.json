@@ -7,10 +7,10 @@
   "scripts": {
     "clean": "ionic-app-scripts clean",
     "patch:node-sass": "node scripts/patch-node-sass.js",
-    "build": "npm run patch:node-sass && ionic-app-scripts build",
-    "lint": "npm run patch:node-sass && ionic-app-scripts lint",
-    "ionic:build": "npm run patch:node-sass && ionic-app-scripts build",
-    "ionic:serve": "npm run patch:node-sass && ionic-app-scripts serve"
+    "build": "node scripts/patch-node-sass.js && ionic-app-scripts build",
+    "lint": "node scripts/patch-node-sass.js && ionic-app-scripts lint",
+    "ionic:build": "node scripts/patch-node-sass.js && ionic-app-scripts build",
+    "ionic:serve": "node scripts/patch-node-sass.js && ionic-app-scripts serve"
   },
   "dependencies": {
     "@angular/animations": "5.2.9",

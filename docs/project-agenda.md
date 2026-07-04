@@ -91,3 +91,5 @@ d action, avec validation humaine et suivi strict des couts.
   encore resolu `node-sass@4.7.2`.
 - Tentative 2 en cours: `.npmrc` avec `ignore-scripts=true`, dependance
   `sass`, puis script `patch-node-sass` avant build/lint.
+- Observation: eviter `npm run` imbrique dans les scripts, car la dependance
+  historique `npm@5.8.0` du projet prend le dessus et ne supporte pas Node 22.
