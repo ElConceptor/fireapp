@@ -1,166 +1,10 @@
-const workflow = [
-  'Comprendre le produit ou service',
-  'Demander les donnees manquantes',
-  'Classer documents et hypotheses',
-  'Produire segments, campagnes et budget',
-  'Demander validation humaine',
-  'Executer, mesurer et apprendre'
-];
+const DATA_URL = './data/prototype-data.json';
 
-const agents = [
-  {
-    name: 'Orchestrateur principal',
-    role: 'Decoupe les missions, assigne les agents, gere les validations et consolide les livrables.',
-    model: 'Premium',
-    cost: 0.42
-  },
-  {
-    name: 'Agent produit',
-    role: 'Interroge le souscripteur, lit les documents et formalise la proposition de valeur.',
-    model: 'Intermediaire',
-    cost: 0.08
-  },
-  {
-    name: 'Agent marche',
-    role: 'Analyse concurrents, segments, objections, canaux et tendances exploitables.',
-    model: 'Recherche',
-    cost: 0.16
-  },
-  {
-    name: 'Agent campagne',
-    role: 'Prepare messages, audiences, calendrier, budget et variantes creatives.',
-    model: 'Economique',
-    cost: 0.05
-  }
-];
+let prototypeData = null;
 
-const modules = [
-  {
-    id: 'product',
-    name: 'Product Intelligence',
-    enabled: true,
-    policy: 'Brief produit valide par le client',
-    monthlyBudget: 120,
-    approvals: 2
-  },
-  {
-    id: 'market',
-    name: 'Market Research',
-    enabled: true,
-    policy: 'Sources citees et hypotheses tracees',
-    monthlyBudget: 220,
-    approvals: 1
-  },
-  {
-    id: 'campaign',
-    name: 'Campaign Builder',
-    enabled: true,
-    policy: 'Validation avant publication ou depense',
-    monthlyBudget: 300,
-    approvals: 3
-  },
-  {
-    id: 'mcp',
-    name: 'MCP Integrations',
-    enabled: false,
-    policy: 'OAuth, scopes limites et audit par connecteur',
-    monthlyBudget: 180,
-    approvals: 4
-  }
-];
-
-const dataHubItems = [
-  'Documents source et briefs client',
-  'Artefacts marketing reutilisables',
-  'Decisions humaines et audit trail',
-  'Couts IA par agent, modele et module',
-  'Memoire semantique et recherche'
-];
-
-const agenda = [
-  {
-    status: 'Socle',
-    text: 'Base propre sans ancien prototype legacy.'
-  },
-  {
-    status: 'Produit',
-    text: 'Consolider mission detaillee, objectifs, agents, decisions et artefacts.'
-  },
-  {
-    status: 'Data',
-    text: 'Modeliser tenants, missions, tasks, documents, decisions et ai_usage_events.'
-  },
-  {
-    status: 'Securite',
-    text: 'Ajouter RBAC, isolation tenant, secrets, permissions MCP et retention.'
-  }
-];
-
-const decisions = [
-  {
-    title: 'Valider le brief produit consolide',
-    owner: 'Souscripteur',
-    risk: 'Moyen',
-    status: 'En attente'
-  },
-  {
-    title: 'Autoriser une campagne LinkedIn test',
-    owner: 'Admin marketing',
-    risk: 'Eleve',
-    status: 'Bloque avant budget'
-  },
-  {
-    title: 'Connecter le CRM via MCP',
-    owner: 'Admin tenant',
-    risk: 'Eleve',
-    status: 'Permissions requises'
-  }
-];
-
-const modelRouting = [
-  {
-    tier: 'Premium',
-    use: 'Strategie, arbitrage, consolidation finale',
-    guardrail: 'Seulement sur taches a fort impact'
-  },
-  {
-    tier: 'Intermediaire',
-    use: 'Analyse documents, marche et synthese',
-    guardrail: 'Batcher les documents par mission'
-  },
-  {
-    tier: 'Economique',
-    use: 'Extraction, classification, variantes',
-    guardrail: 'Defaut pour taches repetitives'
-  }
-];
-
-const artifacts = [
-  {
-    name: 'Brief produit consolide',
-    type: 'Knowledge base',
-    module: 'Product Intelligence',
-    status: 'A valider'
-  },
-  {
-    name: 'Carte segments et ICP',
-    type: 'Market intelligence',
-    module: 'Market Research',
-    status: 'Brouillon'
-  },
-  {
-    name: 'Plan campagne 30 jours',
-    type: 'Go-to-market',
-    module: 'Campaign Builder',
-    status: 'Pret decision'
-  },
-  {
-    name: 'Registre permissions outils',
-    type: 'Security audit',
-    module: 'MCP Integrations',
-    status: 'Inactif'
-  }
-];
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
 
 function renderList(targetId, items, renderItem) {
   const target = document.getElementById(targetId);
@@ -172,12 +16,16 @@ function formatEuro(value) {
 }
 
 function activeModules() {
-  return modules.filter((module) => module.enabled);
+  return prototypeData.modules.filter((module) => module.enabled);
+}
+
+function moduleById(moduleId) {
+  return prototypeData.modules.find((module) => module.id === moduleId);
 }
 
 function computeBudget() {
   const activeBudget = activeModules().reduce((total, module) => total + module.monthlyBudget, 0);
-  const usage = Math.round(activeBudget * 0.62);
+  const usage = Math.round(activeBudget * prototypeData.mission.defaultUsageRate);
   const approvals = activeModules().reduce((total, module) => total + module.approvals, 0);
 
   return {
@@ -185,9 +33,10 @@ function computeBudget() {
     approvals,
     usage,
     remaining: activeBudget - usage,
-    artifactCount: artifacts.filter((artifact) =>
-      activeModules().some((module) => module.name === artifact.module)
-    ).length
+    artifactCount: prototypeData.artifacts.filter((artifact) => {
+      const ownerModule = moduleById(artifact.moduleId);
+      return ownerModule && ownerModule.enabled;
+    }).length
   };
 }
 
@@ -216,7 +65,7 @@ function renderMetrics() {
 function renderPrototype() {
   renderMetrics();
 
-  renderList('workflow', workflow, (step, index) => `
+  renderList('workflow', prototypeData.workflow, (step, index) => `
     <article class="timeline-step">
       <span class="step-number">${index + 1}</span>
       <h3>${step}</h3>
@@ -224,20 +73,20 @@ function renderPrototype() {
     </article>
   `);
 
-  renderList('agents-grid', agents, (agent) => `
+  renderList('agents-grid', prototypeData.agents, (agent) => `
     <article class="agent-card">
       <h3>${agent.name}</h3>
       <p>${agent.role}</p>
       <div class="agent-meta">
-        <span class="pill">${agent.model}</span>
-        <span class="cost">${agent.cost.toFixed(2).replace('.', ',')} EUR</span>
+        <span class="pill">${agent.modelTier}</span>
+        <span class="cost">${agent.unitCost.toFixed(2).replace('.', ',')} EUR</span>
       </div>
     </article>
   `);
 
-  renderList('data-hub-list', dataHubItems, (item) => `<li>${item}</li>`);
+  renderList('data-hub-list', prototypeData.dataHubItems, (item) => `<li>${item}</li>`);
 
-  renderList('decision-list', decisions, (decision) => `
+  renderList('decision-list', prototypeData.decisions, (decision) => `
     <article class="decision-item">
       <div>
         <h3>${decision.title}</h3>
@@ -247,7 +96,7 @@ function renderPrototype() {
     </article>
   `);
 
-  renderList('model-routing', modelRouting, (route) => `
+  renderList('model-routing', prototypeData.modelRouting, (route) => `
     <article class="routing-item">
       <strong>${route.tier}</strong>
       <p>${route.use}</p>
@@ -255,7 +104,7 @@ function renderPrototype() {
     </article>
   `);
 
-  renderList('modules-grid', modules, (module) => `
+  renderList('modules-grid', prototypeData.modules, (module) => `
     <button class="module-card" data-module-id="${module.id}" data-enabled="${module.enabled}" type="button">
       <h3>${module.name}</h3>
       <p>${module.policy}</p>
@@ -266,22 +115,23 @@ function renderPrototype() {
     </button>
   `);
 
-  renderList('artifact-table', artifacts, (artifact) => {
-    const module = modules.find((item) => item.name === artifact.module);
-    const isActive = module && module.enabled;
+  renderList('artifact-table', prototypeData.artifacts, (artifact) => {
+    const ownerModule = moduleById(artifact.moduleId);
+    const isActive = ownerModule && ownerModule.enabled;
+    const moduleName = ownerModule ? ownerModule.name : 'Module inconnu';
 
     return `
       <article class="artifact-row" data-enabled="${isActive}">
         <div>
           <strong>${artifact.name}</strong>
-          <p>${artifact.type} · ${artifact.module}</p>
+          <p>${artifact.type} · ${moduleName}</p>
         </div>
         <span class="pill">${isActive ? artifact.status : 'Module inactif'}</span>
       </article>
     `;
   });
 
-  renderList('agenda-list', agenda, (item) => `
+  renderList('agenda-list', prototypeData.agenda, (item) => `
     <article class="agenda-item">
       <strong>${item.status}</strong>
       <p>${item.text}</p>
@@ -290,11 +140,34 @@ function renderPrototype() {
 
   document.querySelectorAll('[data-module-id]').forEach((button) => {
     button.addEventListener('click', () => {
-      const module = modules.find((item) => item.id === button.dataset.moduleId);
+      const module = moduleById(button.dataset.moduleId);
       module.enabled = !module.enabled;
       renderPrototype();
     });
   });
 }
 
-renderPrototype();
+function renderLoadError(error) {
+  document.getElementById('prototype-error').hidden = false;
+  document.getElementById('prototype-error').textContent =
+    `Impossible de charger le contrat prototype: ${error.message}`;
+}
+
+async function start() {
+  try {
+    const response = await fetch(DATA_URL);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    prototypeData = clone(await response.json());
+    document.getElementById('mission-title').textContent = prototypeData.mission.title;
+    document.getElementById('mission-summary').textContent = prototypeData.mission.summary;
+    renderPrototype();
+  } catch (error) {
+    renderLoadError(error);
+  }
+}
+
+start();

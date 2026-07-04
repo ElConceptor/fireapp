@@ -250,6 +250,16 @@ dd {
   margin-top: 70px;
 }
 
+.prototype-error {
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+  border-radius: 18px;
+  color: #b42318;
+  font-weight: 800;
+  margin-top: 24px;
+  padding: 16px 18px;
+}
+
 .section-title {
   margin-bottom: 22px;
   max-width: 760px;

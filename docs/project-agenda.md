@@ -14,6 +14,8 @@ d action, avec validation humaine et suivi strict des couts.
 - Documentation d architecture initiale ajoutee dans `docs/`.
 - Modele de donnees Data Hub ajoute dans `docs/data-hub-model.md`.
 - Prototype enrichi avec modules cliquables, budget, decisions et artefacts.
+- Donnees runtime extraites dans `src/data/prototype-data.json`.
+- Contrat runtime documente dans `docs/runtime-contracts.md`.
 - Scripts projet:
   - `npm run lint`: valide la base propre;
   - `npm run build`: copie le prototype dans `dist/`;
@@ -31,6 +33,8 @@ d action, avec validation humaine et suivi strict des couts.
 ### 2. Consolider le prototype SaaS
 
 - Statut: console admin interactive ajoutee au prototype.
+- Statut: agents, modules, workflow, decisions et artefacts sont maintenant
+  alimentes par un contrat JSON versionne.
 - Ajouter une vue detail mission: objectifs, agents, decisions, artefacts.
 - Enrichir la vue couts IA avec alertes et arbitrages modele.
 
@@ -69,6 +73,7 @@ d action, avec validation humaine et suivi strict des couts.
 | Vector store | pgvector ou Qdrant | Cout et complexite operationnelle |
 | MCP | Connecteurs natifs ou MCP generique | Permissions trop larges si mal gouvernees |
 | Modele cout | AI Gateway/OpenRouter/couche interne | Perte de controle si les couts ne sont pas audites |
+| Contrat runtime | JSON versionne puis API multi-tenant | Divergence UI/backend sans validation |
 
 ## Definition de done du MVP
 

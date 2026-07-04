@@ -6,6 +6,7 @@ const root = path.resolve(__dirname, '..');
 const publicDir = fs.existsSync(path.join(root, 'dist'))
   ? path.join(root, 'dist')
   : path.join(root, 'src');
+const docsDir = path.join(root, 'docs');
 const port = Number(process.env.PORT || 4173);
 
 const contentTypes = {
@@ -18,9 +19,10 @@ const contentTypes = {
 
 const server = http.createServer((request, response) => {
   const requestPath = request.url === '/' ? '/index.html' : request.url.split('?')[0];
-  const filePath = path.normalize(path.join(publicDir, requestPath));
+  const baseDir = requestPath.startsWith('/docs/') ? root : publicDir;
+  const filePath = path.normalize(path.join(baseDir, requestPath));
 
-  if (!filePath.startsWith(publicDir)) {
+  if (!filePath.startsWith(publicDir) && !filePath.startsWith(docsDir)) {
     response.writeHead(403);
     response.end('Forbidden');
     return;

@@ -66,6 +66,11 @@ Data Hub partage
 MCP / Connecteurs controles
 ```
 
+Le prototype actuel charge un contrat runtime versionne depuis
+`src/data/prototype-data.json`. Ce contrat est documente dans
+[runtime-contracts.md](runtime-contracts.md) et represente la forme initiale de
+la future reponse API de mission.
+
 ## Routage des modeles et optimisation des couts
 
 L orchestrateur choisit le modele selon la criticite de la tache.

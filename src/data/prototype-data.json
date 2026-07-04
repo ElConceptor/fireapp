@@ -1,0 +1,175 @@
+{
+  "version": "2026-07-04.1",
+  "mission": {
+    "title": "Comprendre le produit et proposer le premier plan GTM",
+    "summary": "Le produit comprend les offres du souscripteur, organise les donnees dans un Data Hub, coordonne des agents specialises et garde l humain dans la boucle pour les decisions sensibles.",
+    "defaultUsageRate": 0.62
+  },
+  "workflow": [
+    "Comprendre le produit ou service",
+    "Demander les donnees manquantes",
+    "Classer documents et hypotheses",
+    "Produire segments, campagnes et budget",
+    "Demander validation humaine",
+    "Executer, mesurer et apprendre"
+  ],
+  "agents": [
+    {
+      "id": "orchestrator",
+      "name": "Orchestrateur principal",
+      "role": "Decoupe les missions, assigne les agents, gere les validations et consolide les livrables.",
+      "modelTier": "Premium",
+      "unitCost": 0.42
+    },
+    {
+      "id": "product-agent",
+      "name": "Agent produit",
+      "role": "Interroge le souscripteur, lit les documents et formalise la proposition de valeur.",
+      "modelTier": "Intermediaire",
+      "unitCost": 0.08
+    },
+    {
+      "id": "market-agent",
+      "name": "Agent marche",
+      "role": "Analyse concurrents, segments, objections, canaux et tendances exploitables.",
+      "modelTier": "Recherche",
+      "unitCost": 0.16
+    },
+    {
+      "id": "campaign-agent",
+      "name": "Agent campagne",
+      "role": "Prepare messages, audiences, calendrier, budget et variantes creatives.",
+      "modelTier": "Economique",
+      "unitCost": 0.05
+    }
+  ],
+  "modules": [
+    {
+      "id": "product",
+      "name": "Product Intelligence",
+      "enabled": true,
+      "policy": "Brief produit valide par le client",
+      "monthlyBudget": 120,
+      "approvals": 2
+    },
+    {
+      "id": "market",
+      "name": "Market Research",
+      "enabled": true,
+      "policy": "Sources citees et hypotheses tracees",
+      "monthlyBudget": 220,
+      "approvals": 1
+    },
+    {
+      "id": "campaign",
+      "name": "Campaign Builder",
+      "enabled": true,
+      "policy": "Validation avant publication ou depense",
+      "monthlyBudget": 300,
+      "approvals": 3
+    },
+    {
+      "id": "mcp",
+      "name": "MCP Integrations",
+      "enabled": false,
+      "policy": "OAuth, scopes limites et audit par connecteur",
+      "monthlyBudget": 180,
+      "approvals": 4
+    }
+  ],
+  "dataHubItems": [
+    "Documents source et briefs client",
+    "Artefacts marketing reutilisables",
+    "Decisions humaines et audit trail",
+    "Couts IA par agent, modele et module",
+    "Memoire semantique et recherche"
+  ],
+  "decisions": [
+    {
+      "id": "decision-brief",
+      "title": "Valider le brief produit consolide",
+      "owner": "Souscripteur",
+      "risk": "Moyen",
+      "status": "En attente"
+    },
+    {
+      "id": "decision-campaign",
+      "title": "Autoriser une campagne LinkedIn test",
+      "owner": "Admin marketing",
+      "risk": "Eleve",
+      "status": "Bloque avant budget"
+    },
+    {
+      "id": "decision-mcp",
+      "title": "Connecter le CRM via MCP",
+      "owner": "Admin tenant",
+      "risk": "Eleve",
+      "status": "Permissions requises"
+    }
+  ],
+  "modelRouting": [
+    {
+      "tier": "Premium",
+      "use": "Strategie, arbitrage, consolidation finale",
+      "guardrail": "Seulement sur taches a fort impact"
+    },
+    {
+      "tier": "Intermediaire",
+      "use": "Analyse documents, marche et synthese",
+      "guardrail": "Batcher les documents par mission"
+    },
+    {
+      "tier": "Economique",
+      "use": "Extraction, classification, variantes",
+      "guardrail": "Defaut pour taches repetitives"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "artifact-brief",
+      "name": "Brief produit consolide",
+      "type": "Knowledge base",
+      "moduleId": "product",
+      "status": "A valider"
+    },
+    {
+      "id": "artifact-icp",
+      "name": "Carte segments et ICP",
+      "type": "Market intelligence",
+      "moduleId": "market",
+      "status": "Brouillon"
+    },
+    {
+      "id": "artifact-campaign",
+      "name": "Plan campagne 30 jours",
+      "type": "Go-to-market",
+      "moduleId": "campaign",
+      "status": "Pret decision"
+    },
+    {
+      "id": "artifact-permissions",
+      "name": "Registre permissions outils",
+      "type": "Security audit",
+      "moduleId": "mcp",
+      "status": "Inactif"
+    }
+  ],
+  "agenda": [
+    {
+      "status": "Socle",
+      "text": "Base propre sans ancien prototype legacy."
+    },
+    {
+      "status": "Produit",
+      "text": "Consolider mission detaillee, objectifs, agents, decisions et artefacts."
+    },
+    {
+      "status": "Data",
+      "text": "Modeliser tenants, missions, tasks, documents, decisions et ai_usage_events."
+    },
+    {
+      "status": "Securite",
+      "text": "Ajouter RBAC, isolation tenant, secrets, permissions MCP et retention."
+    }
+  ]
+}
