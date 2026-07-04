@@ -258,7 +258,10 @@ dd {
 .timeline,
 .card-grid,
 .module-grid,
-.agenda-list {
+.agenda-list,
+.decision-list,
+.routing-list,
+.artifact-table {
   display: grid;
   gap: 16px;
 }
@@ -271,6 +274,9 @@ dd {
 .agent-card,
 .module-card,
 .agenda-item,
+.decision-item,
+.routing-item,
+.artifact-row,
 .panel {
   padding: 24px;
 }
@@ -314,6 +320,11 @@ dd {
   padding: 8px 10px;
 }
 
+.pill.warning {
+  background: #fff7ed;
+  color: #b54708;
+}
+
 .cost {
   color: var(--primary);
   font-weight: 900;
@@ -332,6 +343,33 @@ dd {
 
 .panel.dark p {
   color: rgba(255, 255, 255, 0.74);
+}
+
+.budget-meter {
+  margin-top: 28px;
+}
+
+.budget-meter span,
+.budget-meter small {
+  color: rgba(255, 255, 255, 0.82);
+  display: block;
+  font-weight: 800;
+}
+
+.meter-track {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  height: 12px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+
+.meter-track span {
+  background: linear-gradient(90deg, var(--green), #84caff);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  transition: width 220ms ease;
 }
 
 .check-list {
@@ -363,6 +401,64 @@ dd {
 
 .module-card[data-enabled="false"] {
   opacity: 0.62;
+}
+
+.module-card {
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: opacity 160ms ease, transform 160ms ease, border-color 160ms ease;
+}
+
+.module-card:hover,
+.module-card:focus-visible {
+  border-color: rgba(23, 92, 211, 0.44);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.decision-item,
+.artifact-row {
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.decision-item h3,
+.artifact-row strong {
+  display: block;
+  margin: 0 0 4px;
+}
+
+.decision-item p,
+.artifact-row p,
+.routing-item p {
+  margin-bottom: 0;
+}
+
+.routing-item {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+}
+
+.routing-item strong {
+  color: var(--primary);
+}
+
+.routing-item small {
+  color: var(--muted);
+  display: block;
+  font-weight: 800;
+  margin-top: 10px;
+}
+
+.artifact-row[data-enabled="false"] {
+  opacity: 0.56;
 }
 
 .agenda-list {
@@ -404,5 +500,12 @@ footer {
 
   nav {
     flex-wrap: wrap;
+  }
+
+  .decision-item,
+  .artifact-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
   }
 }

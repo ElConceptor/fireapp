@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { execFileSync } = require('child_process');
 
 const root = path.resolve(__dirname, '..');
 const requiredFiles = [
@@ -7,6 +8,7 @@ const requiredFiles = [
   'src/styles.css',
   'src/app.js',
   'docs/agentic-marketing-saas-architecture.md',
+  'docs/data-hub-model.md',
   'docs/project-agenda.md'
 ];
 
@@ -26,6 +28,12 @@ function assert(condition, message) {
 
 for (const file of requiredFiles) {
   assert(fs.existsSync(path.join(root, file)), `Missing required file: ${file}`);
+}
+
+for (const file of ['src/app.js', 'scripts/build-static.js', 'scripts/clean.js', 'scripts/serve-static.js']) {
+  execFileSync(process.execPath, ['--check', path.join(root, file)], {
+    stdio: 'inherit'
+  });
 }
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));

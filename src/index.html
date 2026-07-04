@@ -22,7 +22,9 @@
       <nav aria-label="Navigation principale">
         <a href="#mission">Mission</a>
         <a href="#agents">Agents</a>
+        <a href="#governance">Gouvernance</a>
         <a href="#modules">Modules</a>
+        <a href="#data-hub">Data Hub</a>
         <a href="#agenda">Agenda</a>
       </nav>
     </header>
@@ -46,20 +48,7 @@
           <span class="status-dot"></span>
           <p class="eyebrow">Mission active</p>
           <h2>Comprendre le produit et proposer le premier plan GTM</h2>
-          <dl>
-            <div>
-              <dt>Budget IA</dt>
-              <dd>1 850 EUR</dd>
-            </div>
-            <div>
-              <dt>Validations</dt>
-              <dd>7</dd>
-            </div>
-            <div>
-              <dt>Artefacts</dt>
-              <dd>42</dd>
-            </div>
-          </dl>
+          <dl id="mission-metrics"></dl>
         </aside>
       </section>
 
@@ -79,7 +68,7 @@
         <div id="agents-grid" class="card-grid"></div>
       </section>
 
-      <section class="section split">
+      <section id="governance" class="section split">
         <article class="panel">
           <p class="eyebrow">Data Hub</p>
           <h2>Memoire partagee et auditable.</h2>
@@ -89,7 +78,7 @@
           </p>
           <ul id="data-hub-list" class="check-list"></ul>
         </article>
-        <article class="panel dark">
+        <article class="panel dark budget-panel">
           <p class="eyebrow">Gouvernance cout</p>
           <h2>Chaque appel modele doit etre mesurable.</h2>
           <p>
@@ -97,6 +86,26 @@
             strategie, intermediaire pour l analyse, economique pour extraction et
             variantes.
           </p>
+          <div class="budget-meter" aria-label="Consommation budget IA">
+            <span id="budget-used-label"></span>
+            <div class="meter-track">
+              <span id="budget-used-bar"></span>
+            </div>
+            <small id="budget-remaining-label"></small>
+          </div>
+        </article>
+      </section>
+
+      <section class="section split">
+        <article class="panel">
+          <p class="eyebrow">Decisions humaines</p>
+          <h2>Le souscripteur reste dans la boucle.</h2>
+          <div id="decision-list" class="decision-list"></div>
+        </article>
+        <article class="panel">
+          <p class="eyebrow">Couts par modele</p>
+          <h2>Deleguer au bon niveau de modele.</h2>
+          <div id="model-routing" class="routing-list"></div>
         </article>
       </section>
 
@@ -104,8 +113,20 @@
         <div class="section-title">
           <p class="eyebrow">Admin Console</p>
           <h2>Modules activables par le souscripteur.</h2>
+          <p>
+            Cliquer sur un module simule son activation. Les modules actifs
+            modifient les couts, les validations et les artefacts attendus.
+          </p>
         </div>
         <div id="modules-grid" class="module-grid"></div>
+      </section>
+
+      <section id="data-hub" class="section">
+        <div class="section-title">
+          <p class="eyebrow">Artefacts</p>
+          <h2>Les livrables produits par l equipe agentique.</h2>
+        </div>
+        <div id="artifact-table" class="artifact-table"></div>
       </section>
 
       <section id="agenda" class="section">

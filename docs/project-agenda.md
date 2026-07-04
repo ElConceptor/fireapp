@@ -12,6 +12,8 @@ d action, avec validation humaine et suivi strict des couts.
 - Nouveau prototype web statique cree dans `src/`.
 - Aucun framework legacy ni dependance externe dans `package.json`.
 - Documentation d architecture initiale ajoutee dans `docs/`.
+- Modele de donnees Data Hub ajoute dans `docs/data-hub-model.md`.
+- Prototype enrichi avec modules cliquables, budget, decisions et artefacts.
 - Scripts projet:
   - `npm run lint`: valide la base propre;
   - `npm run build`: copie le prototype dans `dist/`;
@@ -28,14 +30,13 @@ d action, avec validation humaine et suivi strict des couts.
 
 ### 2. Consolider le prototype SaaS
 
-- Rendre la console admin interactive pour activer/desactiver les modules.
+- Statut: console admin interactive ajoutee au prototype.
 - Ajouter une vue detail mission: objectifs, agents, decisions, artefacts.
-- Ajouter une vue couts IA: budget, consommation, alertes et arbitrages modele.
+- Enrichir la vue couts IA avec alertes et arbitrages modele.
 
 ### 3. Definir le Data Hub
 
-- Modeliser tenants, users, missions, tasks, artifacts, documents, decisions,
-  modules, integrations et ai_usage_events.
+- Statut: modele initial documente dans `docs/data-hub-model.md`.
 - Definir la politique de retention et de chiffrement.
 - Preparer l ajout d un vector store pour la memoire semantique.
 

@@ -119,6 +119,8 @@ Schema minimal recommande:
 - integrations
 - audit_events
 
+Le modele initial est detaille dans [data-hub-model.md](data-hub-model.md).
+
 ## Securite
 
 Mesures prioritaires:
