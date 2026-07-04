@@ -14,17 +14,19 @@ d action, avec validation humaine et suivi strict des couts.
   - Admin Console.
 - Documentation d architecture initiale ajoutee.
 - Verification TypeScript OK avec `tsc -p tsconfig.json --noEmit`.
-- Build Ionic bloque par la dependance historique `node-sass@4.7.2` sous Node 22.
-- Correction en cours: installer sans scripts natifs et remplacer `node-sass`
-  par un shim local vers Dart Sass.
+- Installation npm OK sous Node 22 avec scripts natifs ignores.
+- Build Ionic OK avec le shim local `node-sass` vers Dart Sass.
+- Lint Ionic OK; il reste uniquement des avertissements de depreciation venant
+  du socle Ionic 3 et de Sass.
 
 ## Agenda technique priorise
 
 ### 1. Stabiliser la chaine de build
 
-- Remplacer ou contourner `node-sass`.
-- Relancer `npm install`, `npm run build` et `npm run lint`.
-- Documenter le runtime Node supporte si une migration complete est necessaire.
+- Statut: fait pour le prototype actuel sous Node 22.
+- Rester attentif aux avertissements Sass: ils signalent une dette de migration
+  Ionic 3, mais ne bloquent plus le build.
+- Documenter le runtime cible si le projet migre vers Next.js ou Ionic moderne.
 
 ### 2. Consolider le prototype SaaS
 
@@ -95,3 +97,5 @@ d action, avec validation humaine et suivi strict des couts.
   historique `npm@5.8.0` du projet prend le dessus et ne supporte pas Node 22.
 - Observation: Dart Sass parse plus strictement les chaines multi-lignes de
   `ionic.functions.scss`; le script de patch normalise ces messages d erreur.
+- Resolution: `npm install`, `npm run build`, `npm run lint` et `tsc --noEmit`
+  passent dans l environnement courant.
