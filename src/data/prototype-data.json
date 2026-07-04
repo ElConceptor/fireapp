@@ -5,6 +5,57 @@
     "summary": "Le produit comprend les offres du souscripteur, organise les donnees dans un Data Hub, coordonne des agents specialises et garde l humain dans la boucle pour les decisions sensibles.",
     "defaultUsageRate": 0.62
   },
+  "demoCustomer": {
+    "id": "tenant-demo-acme",
+    "companyName": "Acme Sales Academy",
+    "website": "https://example.com/acme-sales-academy",
+    "product": "Programme de formation commerciale B2B assiste par IA",
+    "targetAudience": "Directions commerciales de PME SaaS en Europe",
+    "objective": "Generer 50 leads qualifies en 30 jours",
+    "constraints": "Budget media plafonne a 2 500 EUR, validation humaine obligatoire avant publication",
+    "plan": "Growth Pilot",
+    "capabilities": [
+      "Product Intelligence",
+      "Market Research",
+      "Campaign Builder",
+      "Cost Governance",
+      "Human Approval Workflow"
+    ]
+  },
+  "testCampaign": {
+    "id": "campaign-acme-pilot-001",
+    "name": "Sales Teams AI Readiness Sprint",
+    "customerId": "tenant-demo-acme",
+    "objective": "Creer un pipeline de leads qualifies pour une offre de formation commerciale IA.",
+    "audience": "VP Sales, Head of Revenue et Sales Enablement Managers dans des SaaS B2B de 50 a 500 employes.",
+    "budget": 2500,
+    "duration": "30 jours",
+    "channels": [
+      "LinkedIn Ads",
+      "Email outbound",
+      "Landing page",
+      "Webinar partenaire"
+    ],
+    "actions": [
+      "Analyser les documents produit et extraire la proposition de valeur",
+      "Construire 3 personas et objections commerciales",
+      "Generer 5 variantes de message LinkedIn",
+      "Creer une sequence email de 4 touches",
+      "Proposer un budget par canal",
+      "Demander validation avant publication et depense media"
+    ],
+    "humanGates": [
+      "Validation du brief produit",
+      "Validation budget media",
+      "Validation contenu avant diffusion"
+    ],
+    "expectedArtifacts": [
+      "Brief produit consolide",
+      "Carte segments et ICP",
+      "Plan campagne 30 jours",
+      "Registre des validations"
+    ]
+  },
   "workflow": [
     "Comprendre le produit ou service",
     "Demander les donnees manquantes",
@@ -92,6 +143,16 @@
       "query": "brief produit",
       "expectedCollection": "artifacts",
       "expectedId": "artifact-brief"
+    },
+    {
+      "query": "hubspot crm",
+      "expectedCollection": "integrations",
+      "expectedId": "hubspot"
+    },
+    {
+      "query": "stripe billing",
+      "expectedCollection": "integrations",
+      "expectedId": "stripe"
     }
   ],
   "agents": [
@@ -237,6 +298,136 @@
       "type": "Security audit",
       "moduleId": "mcp",
       "status": "Inactif"
+    }
+  ],
+  "integrations": [
+    {
+      "id": "hubspot",
+      "category": "CRM",
+      "name": "HubSpot",
+      "use": "Synchroniser entreprises, contacts, deals et statut des leads.",
+      "connection": "OAuth ou MCP serveur CRM",
+      "costProfile": "Freemium puis abonnement"
+    },
+    {
+      "id": "salesforce",
+      "category": "CRM",
+      "name": "Salesforce",
+      "use": "Lire pipeline, pousser campagnes et enrichir opportunites.",
+      "connection": "OAuth, API REST ou MCP",
+      "costProfile": "Entreprise"
+    },
+    {
+      "id": "pipedrive",
+      "category": "CRM",
+      "name": "Pipedrive",
+      "use": "Suivre deals PME et activites sales.",
+      "connection": "API token ou OAuth",
+      "costProfile": "PME"
+    },
+    {
+      "id": "google-drive",
+      "category": "Documents",
+      "name": "Google Drive",
+      "use": "Importer briefs, presentations, offres et assets.",
+      "connection": "OAuth scopes limites",
+      "costProfile": "Inclus Workspace"
+    },
+    {
+      "id": "notion",
+      "category": "Knowledge",
+      "name": "Notion",
+      "use": "Importer pages produit, wiki sales et process internes.",
+      "connection": "OAuth ou API integration",
+      "costProfile": "Freemium"
+    },
+    {
+      "id": "brevo",
+      "category": "Email",
+      "name": "Brevo",
+      "use": "Envoyer campagnes email et suivre ouvertures/clics.",
+      "connection": "API key restreinte",
+      "costProfile": "Economique"
+    },
+    {
+      "id": "mailchimp",
+      "category": "Email",
+      "name": "Mailchimp",
+      "use": "Audiences marketing, newsletters et automation simple.",
+      "connection": "OAuth ou API key",
+      "costProfile": "PME"
+    },
+    {
+      "id": "linkedin-ads",
+      "category": "Ads",
+      "name": "LinkedIn Ads",
+      "use": "Activer campagnes B2B ciblees apres validation budget.",
+      "connection": "OAuth Ads API",
+      "costProfile": "Media budget"
+    },
+    {
+      "id": "google-ads",
+      "category": "Ads",
+      "name": "Google Ads",
+      "use": "Campagnes search, remarketing et mesure conversions.",
+      "connection": "OAuth Ads API",
+      "costProfile": "Media budget"
+    },
+    {
+      "id": "ga4",
+      "category": "Analytics",
+      "name": "Google Analytics 4",
+      "use": "Lire trafic, conversions et performance landing pages.",
+      "connection": "OAuth Analytics API",
+      "costProfile": "Gratuit"
+    },
+    {
+      "id": "posthog",
+      "category": "Analytics",
+      "name": "PostHog",
+      "use": "Suivre evenements produit et funnels self-serve.",
+      "connection": "API key projet",
+      "costProfile": "Open source / cloud"
+    },
+    {
+      "id": "slack",
+      "category": "Collaboration",
+      "name": "Slack",
+      "use": "Notifier decisions, validations et alertes cout.",
+      "connection": "OAuth bot scopes limites",
+      "costProfile": "Freemium"
+    },
+    {
+      "id": "teams",
+      "category": "Collaboration",
+      "name": "Microsoft Teams",
+      "use": "Boucle de validation et alertes pour organisations Microsoft.",
+      "connection": "Graph API",
+      "costProfile": "Inclus M365"
+    },
+    {
+      "id": "stripe",
+      "category": "Billing",
+      "name": "Stripe",
+      "use": "Abonnements SaaS, plans, facturation et limites par usage.",
+      "connection": "API key restreinte + webhooks",
+      "costProfile": "Pay-as-you-go"
+    },
+    {
+      "id": "n8n",
+      "category": "Automation",
+      "name": "n8n",
+      "use": "Automatisations open source entre outils clients.",
+      "connection": "Webhook ou self-hosted connector",
+      "costProfile": "Open source / cloud"
+    },
+    {
+      "id": "custom-mcp",
+      "category": "MCP",
+      "name": "MCP custom server",
+      "use": "Connecter outils internes via permissions auditees.",
+      "connection": "MCP server par tenant",
+      "costProfile": "Selon hebergement"
     }
   ],
   "agenda": [

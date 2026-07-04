@@ -17,6 +17,7 @@ d action, avec validation humaine et suivi strict des couts.
 - Donnees runtime extraites dans `src/data/prototype-data.json`.
 - Contrat runtime documente dans `docs/runtime-contracts.md`.
 - Passe journey, UI/UX et query documentee dans `docs/journey-ux-review.md`.
+- Scenario compte client et campagne test documente dans `docs/demo-campaign-scenario.md`.
 - Scripts projet:
   - `npm run lint`: valide la base propre;
   - `npm run build`: copie le prototype dans `dist/`;
@@ -39,6 +40,7 @@ d action, avec validation humaine et suivi strict des couts.
 - Statut: intake, query globale, filtre artefacts et journey map ajoutes.
 - Ajouter une vue detail mission: objectifs, agents, taches et timeline.
 - Enrichir la vue couts IA avec alertes et arbitrages modele.
+- Ajouter actions approve/reject sur les validations de la campagne test.
 
 ### 3. Definir le Data Hub
 

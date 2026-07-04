@@ -10,6 +10,7 @@ const requiredFiles = [
   'src/data/prototype-data.json',
   'docs/agentic-marketing-saas-architecture.md',
   'docs/data-hub-model.md',
+  'docs/demo-campaign-scenario.md',
   'docs/runtime-contracts.md',
   'docs/project-agenda.md'
 ];
@@ -71,7 +72,7 @@ assert(
   'mission.defaultUsageRate must be a number between 0 and 1.'
 );
 
-for (const collectionName of ['workflow', 'journeys', 'intakeQuestions', 'queryExamples', 'agents', 'modules', 'dataHubItems', 'decisions', 'modelRouting', 'artifacts', 'agenda']) {
+for (const collectionName of ['workflow', 'journeys', 'intakeQuestions', 'queryExamples', 'agents', 'modules', 'dataHubItems', 'decisions', 'modelRouting', 'artifacts', 'integrations', 'agenda']) {
   assert(Array.isArray(prototypeData[collectionName]), `${collectionName} must be an array.`);
   assert(prototypeData[collectionName].length > 0, `${collectionName} must not be empty.`);
 }
@@ -82,6 +83,20 @@ assertUniqueIds(prototypeData.decisions, 'decisions');
 assertUniqueIds(prototypeData.artifacts, 'artifacts');
 assertUniqueIds(prototypeData.journeys, 'journeys');
 assertUniqueIds(prototypeData.intakeQuestions, 'intakeQuestions');
+assertUniqueIds(prototypeData.integrations, 'integrations');
+
+assertNonEmptyString(prototypeData.demoCustomer.companyName, 'demoCustomer.companyName');
+assertNonEmptyString(prototypeData.demoCustomer.objective, 'demoCustomer.objective');
+assertNonEmptyString(prototypeData.testCampaign.name, 'testCampaign.name');
+assertNonEmptyString(prototypeData.testCampaign.customerId, 'testCampaign.customerId');
+assert(
+  prototypeData.testCampaign.customerId === prototypeData.demoCustomer.id,
+  'testCampaign.customerId must reference demoCustomer.id.'
+);
+assert(
+  typeof prototypeData.testCampaign.budget === 'number' && prototypeData.testCampaign.budget > 0,
+  'testCampaign.budget must be positive.'
+);
 
 for (const module of prototypeData.modules) {
   assertNonEmptyString(module.name, `modules.${module.id}.name`);
@@ -100,6 +115,12 @@ for (const agent of prototypeData.agents) {
 
 for (const artifact of prototypeData.artifacts) {
   assert(moduleIds.has(artifact.moduleId), `artifacts.${artifact.id}.moduleId references unknown module ${artifact.moduleId}.`);
+}
+
+for (const integration of prototypeData.integrations) {
+  assertNonEmptyString(integration.category, `integrations.${integration.id}.category`);
+  assertNonEmptyString(integration.name, `integrations.${integration.id}.name`);
+  assertNonEmptyString(integration.connection, `integrations.${integration.id}.connection`);
 }
 
 for (const question of prototypeData.intakeQuestions) {

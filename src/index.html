@@ -21,11 +21,14 @@
       </a>
       <nav aria-label="Navigation principale">
         <a href="#intake">Intake</a>
+        <a href="#demo-account">Compte demo</a>
+        <a href="#campaign">Campagne</a>
         <a href="#query">Query</a>
         <a href="#mission">Mission</a>
         <a href="#agents">Agents</a>
         <a href="#governance">Gouvernance</a>
         <a href="#modules">Modules</a>
+        <a href="#integrations">Integrations</a>
         <a href="#data-hub">Data Hub</a>
         <a href="#agenda">Agenda</a>
       </nav>
@@ -71,6 +74,38 @@
           <h2 id="readiness-score">0%</h2>
           <p id="readiness-summary">Renseigner les champs requis pour demarrer.</p>
           <ul id="readiness-list" class="check-list"></ul>
+        </article>
+      </section>
+
+      <section id="demo-account" class="section split">
+        <article class="panel">
+          <p class="eyebrow">Compte client test</p>
+          <h2>Simuler la creation d un souscripteur.</h2>
+          <p>
+            Le compte demo charge un client fictif, ses objectifs et les capacites
+            activees par la plateforme.
+          </p>
+          <button id="create-demo-account" class="button primary" type="button">Creer le compte demo</button>
+        </article>
+        <article class="panel account-panel">
+          <p class="eyebrow">Account workspace</p>
+          <div id="demo-account-card" class="empty-state">Aucun compte demo cree.</div>
+        </article>
+      </section>
+
+      <section id="campaign" class="section split">
+        <article class="panel">
+          <p class="eyebrow">Campagne test</p>
+          <h2>Generer une campagne avec les capacites actives.</h2>
+          <p>
+            Cette campagne montre comment les agents transforment le brief client en
+            plan d action, budget, canaux et validations.
+          </p>
+          <button id="prepare-campaign" class="button primary" type="button">Preparer la campagne</button>
+        </article>
+        <article class="panel campaign-panel">
+          <p class="eyebrow">Campaign preview</p>
+          <div id="test-campaign-card" class="empty-state">Creer le compte demo pour preparer la campagne.</div>
         </article>
       </section>
 
@@ -159,6 +194,18 @@
           </p>
         </div>
         <div id="modules-grid" class="module-grid"></div>
+      </section>
+
+      <section id="integrations" class="section">
+        <div class="section-title">
+          <p class="eyebrow">Solutions connectables</p>
+          <h2>Connecter la plateforme aux outils du souscripteur.</h2>
+          <p>
+            Les connecteurs doivent rester controles par scopes, modules actifs,
+            validation humaine et audit trail.
+          </p>
+        </div>
+        <div id="integration-catalog" class="integration-catalog"></div>
       </section>
 
       <section id="data-hub" class="section">

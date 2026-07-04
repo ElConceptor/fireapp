@@ -36,8 +36,13 @@ function searchableRecords() {
       text: `${artifact.name} ${artifact.type} ${artifact.status} ${ownerModule ? ownerModule.name : ''}`
     };
   });
+  const integrations = data.integrations.map((integration) => ({
+    collection: 'integrations',
+    id: integration.id,
+    text: `${integration.name} ${integration.category} ${integration.use} ${integration.connection} ${integration.costProfile}`
+  }));
 
-  return modules.concat(agents, decisions, artifacts);
+  return modules.concat(agents, decisions, artifacts, integrations);
 }
 
 function queryRecords(query) {
@@ -55,6 +60,10 @@ function queryRecords(query) {
 
 const requiredTargets = [
   'intake-form',
+  'create-demo-account',
+  'demo-account-card',
+  'prepare-campaign',
+  'test-campaign-card',
   'readiness-score',
   'readiness-list',
   'global-query',
@@ -62,6 +71,7 @@ const requiredTargets = [
   'query-results',
   'journey-map',
   'modules-grid',
+  'integration-catalog',
   'artifact-filter',
   'artifact-table'
 ];
@@ -69,6 +79,11 @@ const requiredTargets = [
 for (const target of requiredTargets) {
   assert(html.includes(`id="${target}"`), `Journey target #${target} is missing from index.html.`);
 }
+
+assert(data.testCampaign.customerId === data.demoCustomer.id, 'Campaign must reference the demo customer account.');
+assert(data.testCampaign.actions.length >= 4, 'Test campaign must include enough platform actions.');
+assert(data.testCampaign.humanGates.length >= 2, 'Test campaign must include human approval gates.');
+assert(data.integrations.length >= 8, 'Integration catalog should cover multiple external solution types.');
 
 for (const journey of data.journeys) {
   assert(journey.steps.length >= 3, `Journey ${journey.id} should have at least three steps.`);

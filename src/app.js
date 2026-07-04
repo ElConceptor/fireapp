@@ -3,6 +3,8 @@ const DATA_URL = './data/prototype-data.json';
 let prototypeData = null;
 let intakeAnswers = {};
 let artifactFilter = '';
+let demoAccountCreated = false;
+let campaignPrepared = false;
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -80,8 +82,14 @@ function searchableRecords() {
       text: `${artifact.name} ${artifact.type} ${artifact.status} ${ownerModule ? ownerModule.name : ''}`
     };
   });
+  const integrationRecords = prototypeData.integrations.map((integration) => ({
+    id: integration.id,
+    type: 'Integration',
+    title: integration.name,
+    text: `${integration.name} ${integration.category} ${integration.use} ${integration.connection} ${integration.costProfile}`
+  }));
 
-  return moduleRecords.concat(agentRecords, decisionRecords, artifactRecords);
+  return moduleRecords.concat(agentRecords, decisionRecords, artifactRecords, integrationRecords);
 }
 
 function runQuery(query) {
@@ -171,6 +179,80 @@ function renderReadiness() {
   renderList('readiness-list', items, (item) => `<li>${item}</li>`);
 }
 
+function renderDemoAccount() {
+  const target = document.getElementById('demo-account-card');
+
+  if (!demoAccountCreated) {
+    target.className = 'empty-state';
+    target.textContent = 'Aucun compte demo cree.';
+    return;
+  }
+
+  const customer = prototypeData.demoCustomer;
+  target.className = 'account-card';
+  target.innerHTML = `
+    <h3>${escapeHtml(customer.companyName)}</h3>
+    <p>${escapeHtml(customer.product)}</p>
+    <dl class="account-meta">
+      <div>
+        <dt>Plan</dt>
+        <dd>${escapeHtml(customer.plan)}</dd>
+      </div>
+      <div>
+        <dt>Objectif</dt>
+        <dd>${escapeHtml(customer.objective)}</dd>
+      </div>
+    </dl>
+    <p><strong>Cible:</strong> ${escapeHtml(customer.targetAudience)}</p>
+    <p><strong>Limites:</strong> ${escapeHtml(customer.constraints)}</p>
+    <div class="capability-list">
+      ${customer.capabilities.map((capability) => `<span class="pill">${escapeHtml(capability)}</span>`).join('')}
+    </div>
+  `;
+}
+
+function renderTestCampaign() {
+  const target = document.getElementById('test-campaign-card');
+
+  if (!demoAccountCreated) {
+    target.className = 'empty-state';
+    target.textContent = 'Creer le compte demo pour preparer la campagne.';
+    return;
+  }
+
+  if (!campaignPrepared) {
+    target.className = 'empty-state';
+    target.textContent = 'Compte cree. La campagne attend la preparation par les agents.';
+    return;
+  }
+
+  const campaign = prototypeData.testCampaign;
+  target.className = 'campaign-card';
+  target.innerHTML = `
+    <h3>${escapeHtml(campaign.name)}</h3>
+    <p>${escapeHtml(campaign.objective)}</p>
+    <div class="campaign-kpis">
+      <span><strong>${formatEuro(campaign.budget)}</strong> budget</span>
+      <span><strong>${escapeHtml(campaign.duration)}</strong> duree</span>
+    </div>
+    <p><strong>Audience:</strong> ${escapeHtml(campaign.audience)}</p>
+    <div class="mini-grid">
+      <div>
+        <strong>Canaux</strong>
+        <ul>${campaign.channels.map((channel) => `<li>${escapeHtml(channel)}</li>`).join('')}</ul>
+      </div>
+      <div>
+        <strong>Actions agents</strong>
+        <ul>${campaign.actions.map((action) => `<li>${escapeHtml(action)}</li>`).join('')}</ul>
+      </div>
+      <div>
+        <strong>Validations humaines</strong>
+        <ul>${campaign.humanGates.map((gate) => `<li>${escapeHtml(gate)}</li>`).join('')}</ul>
+      </div>
+    </div>
+  `;
+}
+
 function renderMetrics() {
   const budget = computeBudget();
   const metrics = [
@@ -195,6 +277,8 @@ function renderMetrics() {
 
 function renderPrototype() {
   renderIntake();
+  renderDemoAccount();
+  renderTestCampaign();
   renderMetrics();
 
   renderList('workflow', prototypeData.workflow, (step, index) => `
@@ -245,6 +329,15 @@ function renderPrototype() {
         <span class="cost">${formatEuro(module.monthlyBudget)}</span>
       </div>
     </button>
+  `);
+
+  renderList('integration-catalog', prototypeData.integrations, (integration) => `
+    <article class="integration-card">
+      <span class="pill">${escapeHtml(integration.category)}</span>
+      <h3>${escapeHtml(integration.name)}</h3>
+      <p>${escapeHtml(integration.use)}</p>
+      <small>${escapeHtml(integration.connection)} · ${escapeHtml(integration.costProfile)}</small>
+    </article>
   `);
 
   const normalizedArtifactFilter = artifactFilter.trim().toLowerCase();
@@ -334,6 +427,21 @@ async function start() {
       artifactFilter = event.target.value;
       renderPrototype();
       document.getElementById('artifact-filter').focus();
+    });
+    document.getElementById('create-demo-account').addEventListener('click', () => {
+      demoAccountCreated = true;
+      renderPrototype();
+      document.getElementById('prepare-campaign').focus();
+    });
+    document.getElementById('prepare-campaign').addEventListener('click', () => {
+      if (!demoAccountCreated) {
+        renderTestCampaign();
+        document.getElementById('create-demo-account').focus();
+        return;
+      }
+
+      campaignPrepared = true;
+      renderPrototype();
     });
   } catch (error) {
     renderLoadError(error);
