@@ -1,3 +1,84 @@
 page-contact {
+  .admin-page {
+    background: #f5f7fb;
+  }
 
+  .admin-hero,
+  .tools-card,
+  .module-list article {
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    border-radius: 22px;
+    box-shadow: 0 12px 32px rgba(16, 24, 40, 0.07);
+    margin-bottom: 16px;
+    padding: 22px;
+  }
+
+  .admin-hero {
+    background: linear-gradient(135deg, #101828, #344054);
+    color: #fff;
+  }
+
+  .eyebrow {
+    color: #2e90fa;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .admin-hero .eyebrow,
+  .admin-hero p {
+    color: rgba(255, 255, 255, 0.76);
+  }
+
+  h1,
+  h2,
+  h3 {
+    margin: 8px 0;
+  }
+
+  .module-list article {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .module-list h2 {
+    color: #101828;
+    font-size: 18px;
+  }
+
+  .module-list p,
+  .tools-card p {
+    color: #667085;
+  }
+
+  .module-meta {
+    text-align: right;
+  }
+
+  .module-meta span {
+    color: #175cd3;
+    display: block;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .module-disabled {
+    opacity: 0.62;
+  }
+
+  @media (max-width: 640px) {
+    .module-list article {
+      align-items: flex-start;
+      display: block;
+    }
+
+    .module-meta {
+      margin-top: 12px;
+      text-align: left;
+    }
+  }
 }

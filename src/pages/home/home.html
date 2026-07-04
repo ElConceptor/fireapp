@@ -1,25 +1,77 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>Home</ion-title>
+    <ion-title>Mission Control</ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content class="mission-page">
+  <section class="hero-panel">
+    <div>
+      <p class="eyebrow">SaaS marketing & sales agentique</p>
+      <h1>Une equipe virtuelle pilotee par objectifs, couts et decisions humaines.</h1>
+      <p class="hero-copy">
+        L orchestrateur comprend le produit, interroge le souscripteur, structure les
+        connaissances, delegue aux agents specialises et demande validation avant les
+        actions sensibles.
+      </p>
+    </div>
+    <button ion-button color="light" round>Demarrer une mission</button>
+  </section>
 
-<ion-input type="text" [(ngModel)]="newGarde" placeholder="describe me"></ion-input>
-<button ion-button (click)="addGardes()">Add!</button>
-<h1>whaou</h1>
+  <ion-grid class="metric-grid">
+    <ion-row>
+      <ion-col col-6 col-md-3 *ngFor="let metric of missionMetrics">
+        <div class="metric-card">
+          <span>{{ metric.label }}</span>
+          <strong>{{ metric.value }}</strong>
+          <small>{{ metric.detail }}</small>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-<ion-list>
-start list   <ion-item-sliding *ngFor="let item of gardeList | async ">
-     <ion-item>
-     aa {{item.title}}
-     </ion-item>
-     <ion-item-options side="right">
-       <button ion-button color="danger" icon-only (click)="removeItem(item.$key)"><ion-icon name="trash"></ion-icon></button>
-     </ion-item-options>
-   </ion-item-sliding>
- </ion-list>
+  <section class="section-block">
+    <div class="section-heading">
+      <p class="eyebrow">Equipe active</p>
+      <h2>Agents collaboratifs avec delegation de modeles</h2>
+    </div>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-12 col-md-6 *ngFor="let agent of agents">
+          <article class="agent-card">
+            <div class="agent-card__header">
+              <h3>{{ agent.name }}</h3>
+              <span>{{ agent.status }}</span>
+            </div>
+            <p>{{ agent.role }}</p>
+            <div class="agent-card__footer">
+              <small>{{ agent.model }}</small>
+              <strong>{{ agent.cost }}</strong>
+            </div>
+          </article>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </section>
 
+  <section class="split-panel">
+    <div class="workflow-card">
+      <p class="eyebrow">Workflow cible</p>
+      <h2>Du diagnostic produit au plan d action</h2>
+      <ol>
+        <li *ngFor="let step of workflow">{{ step }}</li>
+      </ol>
+    </div>
 
+    <div class="artifact-card">
+      <p class="eyebrow">Data Hub partage</p>
+      <h2>Artefacts exploitables</h2>
+      <ion-list no-lines>
+        <ion-item *ngFor="let artifact of artifacts">
+          <h3>{{ artifact.title }}</h3>
+          <p>{{ artifact.type }} · {{ artifact.owner }}</p>
+        </ion-item>
+      </ion-list>
+    </div>
+  </section>
 </ion-content>

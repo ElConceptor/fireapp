@@ -1,3 +1,79 @@
 page-about {
+  .architecture-page {
+    background: #f8fafc;
+  }
 
+  .intro-card,
+  .governance-card,
+  .roadmap-card,
+  .layer-grid article {
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    border-radius: 22px;
+    box-shadow: 0 12px 32px rgba(16, 24, 40, 0.07);
+    margin-bottom: 18px;
+    padding: 22px;
+  }
+
+  .intro-card {
+    background: linear-gradient(135deg, #eff8ff, #ffffff);
+  }
+
+  .eyebrow {
+    color: #175cd3;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  h1,
+  h2 {
+    color: #101828;
+    margin: 8px 0 12px;
+  }
+
+  p {
+    color: #475467;
+    line-height: 1.55;
+  }
+
+  .layer-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .governance-card {
+    align-items: center;
+    display: grid;
+    gap: 18px;
+    grid-template-columns: 1.4fr 1fr;
+  }
+
+  .policy-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .policy-list span {
+    background: #ecfdf3;
+    border-radius: 999px;
+    color: #027a48;
+    font-weight: 700;
+    padding: 10px 12px;
+  }
+
+  .roadmap-card ion-icon {
+    color: #12b76a;
+  }
+
+  @media (max-width: 768px) {
+    .layer-grid,
+    .governance-card {
+      display: block;
+    }
+  }
 }

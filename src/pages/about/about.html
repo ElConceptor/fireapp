@@ -1,11 +1,55 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      About
+      Architecture
     </ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content class="architecture-page">
+  <section class="intro-card">
+    <p class="eyebrow">Architecture cible</p>
+    <h1>Un SaaS modulaire ou les agents travaillent sur une memoire partagee.</h1>
+    <p>
+      Chaque mission garde une trace complete des donnees sources, hypotheses, couts,
+      validations humaines et artefacts produits. Les agents peuvent utiliser des
+      modeles differents selon la criticite et le budget disponible.
+    </p>
+  </section>
 
+  <section class="layer-grid">
+    <article *ngFor="let layer of architectureLayers">
+      <h2>{{ layer.title }}</h2>
+      <p>{{ layer.description }}</p>
+    </article>
+  </section>
+
+  <section class="governance-card">
+    <div>
+      <p class="eyebrow">Gouvernance</p>
+      <h2>Humain dans la boucle par conception</h2>
+      <p>
+        Les agents peuvent preparer, recommander et simuler. Les decisions sensibles
+        comme depenser un budget, publier une campagne ou contacter des prospects
+        exigent une validation explicite du souscripteur.
+      </p>
+    </div>
+    <div class="policy-list">
+      <span>RBAC par tenant</span>
+      <span>Plafonds de cout</span>
+      <span>Audit trail</span>
+      <span>Permissions MCP</span>
+    </div>
+  </section>
+
+  <section class="roadmap-card">
+    <p class="eyebrow">Plan de construction</p>
+    <h2>Etapes de livraison</h2>
+    <ion-list>
+      <ion-item *ngFor="let item of roadmap">
+        <ion-icon name="checkmark-circle" item-start></ion-icon>
+        {{ item }}
+      </ion-item>
+    </ion-list>
+  </section>
 </ion-content>
