@@ -105,7 +105,8 @@ main {
 .agent-card,
 .module-card,
 .agenda-item,
-.timeline-step {
+.timeline-step,
+.journey-card {
   background: var(--card);
   border: 1px solid rgba(228, 231, 236, 0.9);
   border-radius: 30px;
@@ -260,6 +261,64 @@ dd {
   padding: 16px 18px;
 }
 
+.field-label,
+.input-group span {
+  color: var(--ink);
+  display: block;
+  font-size: 13px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.intake-form {
+  display: grid;
+  gap: 14px;
+}
+
+input,
+textarea {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  color: var(--ink);
+  font: inherit;
+  outline: none;
+  padding: 13px 14px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+  width: 100%;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+  border-color: rgba(23, 92, 211, 0.64);
+  box-shadow: 0 0 0 4px rgba(23, 92, 211, 0.12);
+}
+
+.query-row {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: 16px;
+}
+
+.query-result {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+}
+
+.readiness-panel h2 {
+  color: var(--primary);
+}
+
 .section-title {
   margin-bottom: 22px;
   max-width: 760px;
@@ -271,7 +330,9 @@ dd {
 .agenda-list,
 .decision-list,
 .routing-list,
-.artifact-table {
+.artifact-table,
+.journey-map,
+.query-results {
   display: grid;
   gap: 16px;
 }
@@ -287,6 +348,7 @@ dd {
 .decision-item,
 .routing-item,
 .artifact-row,
+.journey-card,
 .panel {
   padding: 24px;
 }
@@ -471,6 +533,26 @@ dd {
   opacity: 0.56;
 }
 
+.journey-card {
+  box-shadow: none;
+}
+
+.journey-card strong {
+  color: var(--primary);
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.journey-card ol {
+  color: var(--muted);
+  margin: 0 0 16px;
+  padding-left: 22px;
+}
+
+.journey-card li {
+  margin: 8px 0;
+}
+
 .agenda-list {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -510,6 +592,10 @@ footer {
 
   nav {
     flex-wrap: wrap;
+  }
+
+  .query-row {
+    grid-template-columns: 1fr;
   }
 
   .decision-item,

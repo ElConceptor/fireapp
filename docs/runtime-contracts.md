@@ -16,8 +16,11 @@ l interface. Le meme format pourra ensuite etre servi par une API multi-tenant.
 | version | Version du contrat de demo |
 | mission | Titre, resume et taux de consommation budget simule |
 | workflow | Etapes de mission affichees dans Mission Control |
+| journeys | Parcours utilisateurs, acteurs, etapes et metriques de succes |
+| intakeQuestions | Questions posees au souscripteur pour cadrer la mission |
+| queryExamples | Exemples de recherche attendus pour verifier le Data Hub |
 | agents | Equipe agentique et cout unitaire par niveau de modele |
-| modules | Services activables, budget mensuel et validations requises |
+| modules | Services activables, mots-cles de recherche, budget mensuel et validations requises |
 | dataHubItems | Capacites affichees dans la memoire partagee |
 | decisions | File des decisions humaines a traiter |
 | modelRouting | Politique de delegation vers les modeles |
@@ -31,7 +34,9 @@ l interface. Le meme format pourra ensuite etre servi par une API multi-tenant.
 - presence du fichier JSON;
 - syntaxe JavaScript des scripts et du prototype;
 - ids uniques pour agents, modules, decisions et artefacts;
+- ids uniques pour journeys et questions d intake;
 - references `artifact.moduleId` vers un module existant;
+- exemples de query qui retournent les objets attendus via `npm run test:journeys`;
 - budgets positifs;
 - taux de consommation entre 0 et 1;
 - absence de references package legacy dans `package.json`.
@@ -42,6 +47,8 @@ l interface. Le meme format pourra ensuite etre servi par une API multi-tenant.
   ancienne interface.
 - Ne pas renommer un champ existant sans migrer le validateur.
 - Preferer des ids stables (`campaign`, `market`, `mcp`) aux noms affiches.
+- Ajouter des `keywords` metier aux modules pour supporter les requetes en
+  francais meme si certains noms de modules restent en anglais.
 - Les montants restent numeriques dans le contrat et sont formates dans l UI.
 - Les statuts affiches peuvent etre textuels dans le prototype, mais devront
   devenir des enums cote backend.

@@ -48,7 +48,7 @@ for (const file of requiredFiles) {
   assert(fs.existsSync(path.join(root, file)), `Missing required file: ${file}`);
 }
 
-for (const file of ['src/app.js', 'scripts/build-static.js', 'scripts/clean.js', 'scripts/serve-static.js']) {
+for (const file of ['src/app.js', 'scripts/build-static.js', 'scripts/clean.js', 'scripts/serve-static.js', 'scripts/test-journeys.js']) {
   execFileSync(process.execPath, ['--check', path.join(root, file)], {
     stdio: 'inherit'
   });
@@ -71,7 +71,7 @@ assert(
   'mission.defaultUsageRate must be a number between 0 and 1.'
 );
 
-for (const collectionName of ['workflow', 'agents', 'modules', 'dataHubItems', 'decisions', 'modelRouting', 'artifacts', 'agenda']) {
+for (const collectionName of ['workflow', 'journeys', 'intakeQuestions', 'queryExamples', 'agents', 'modules', 'dataHubItems', 'decisions', 'modelRouting', 'artifacts', 'agenda']) {
   assert(Array.isArray(prototypeData[collectionName]), `${collectionName} must be an array.`);
   assert(prototypeData[collectionName].length > 0, `${collectionName} must not be empty.`);
 }
@@ -80,12 +80,16 @@ const moduleIds = assertUniqueIds(prototypeData.modules, 'modules');
 assertUniqueIds(prototypeData.agents, 'agents');
 assertUniqueIds(prototypeData.decisions, 'decisions');
 assertUniqueIds(prototypeData.artifacts, 'artifacts');
+assertUniqueIds(prototypeData.journeys, 'journeys');
+assertUniqueIds(prototypeData.intakeQuestions, 'intakeQuestions');
 
 for (const module of prototypeData.modules) {
   assertNonEmptyString(module.name, `modules.${module.id}.name`);
   assert(typeof module.enabled === 'boolean', `modules.${module.id}.enabled must be a boolean.`);
   assert(typeof module.monthlyBudget === 'number' && module.monthlyBudget >= 0, `modules.${module.id}.monthlyBudget must be positive.`);
   assert(Number.isInteger(module.approvals) && module.approvals >= 0, `modules.${module.id}.approvals must be a positive integer.`);
+  assert(Array.isArray(module.keywords), `modules.${module.id}.keywords must be an array.`);
+  assert(module.keywords.length > 0, `modules.${module.id}.keywords must not be empty.`);
 }
 
 for (const agent of prototypeData.agents) {
@@ -96,6 +100,17 @@ for (const agent of prototypeData.agents) {
 
 for (const artifact of prototypeData.artifacts) {
   assert(moduleIds.has(artifact.moduleId), `artifacts.${artifact.id}.moduleId references unknown module ${artifact.moduleId}.`);
+}
+
+for (const question of prototypeData.intakeQuestions) {
+  assertNonEmptyString(question.label, `intakeQuestions.${question.id}.label`);
+  assert(typeof question.required === 'boolean', `intakeQuestions.${question.id}.required must be a boolean.`);
+}
+
+for (const example of prototypeData.queryExamples) {
+  assertNonEmptyString(example.query, 'queryExamples.query');
+  assertNonEmptyString(example.expectedCollection, `queryExamples.${example.query}.expectedCollection`);
+  assertNonEmptyString(example.expectedId, `queryExamples.${example.query}.expectedId`);
 }
 
 assert(!fs.existsSync(path.join(root, 'config.xml')), 'Legacy Cordova config.xml remains.');

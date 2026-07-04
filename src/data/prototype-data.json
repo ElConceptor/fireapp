@@ -13,6 +13,87 @@
     "Demander validation humaine",
     "Executer, mesurer et apprendre"
   ],
+  "journeys": [
+    {
+      "id": "subscriber-onboarding",
+      "title": "Souscripteur: cadrer une mission",
+      "actor": "Souscripteur",
+      "steps": [
+        "Decrire le produit",
+        "Renseigner la cible",
+        "Partager les contraintes",
+        "Valider le brief produit"
+      ],
+      "successMetric": "Brief produit valide et exploitable par les agents"
+    },
+    {
+      "id": "admin-module-control",
+      "title": "Admin: activer les modules",
+      "actor": "Admin tenant",
+      "steps": [
+        "Choisir les modules",
+        "Verifier budget et validations",
+        "Controler permissions MCP",
+        "Publier la configuration"
+      ],
+      "successMetric": "Modules actifs avec budget et audit trail"
+    },
+    {
+      "id": "operator-decision-loop",
+      "title": "Operateur: traiter les decisions",
+      "actor": "Marketing operator",
+      "steps": [
+        "Lire les recommandations",
+        "Verifier sources et risques",
+        "Approuver ou rejeter",
+        "Mesurer l impact"
+      ],
+      "successMetric": "Aucune action sensible sans validation"
+    }
+  ],
+  "intakeQuestions": [
+    {
+      "id": "product",
+      "label": "Produit ou service",
+      "placeholder": "Ex: plateforme de formation B2B pour equipes sales",
+      "required": true
+    },
+    {
+      "id": "audience",
+      "label": "Client cible",
+      "placeholder": "Ex: directions commerciales de PME SaaS",
+      "required": true
+    },
+    {
+      "id": "objective",
+      "label": "Objectif business",
+      "placeholder": "Ex: generer 50 leads qualifies en 30 jours",
+      "required": true
+    },
+    {
+      "id": "constraints",
+      "label": "Contraintes ou limites",
+      "placeholder": "Ex: budget media limite, validation juridique obligatoire",
+      "required": false
+    }
+  ],
+  "queryExamples": [
+    {
+      "query": "budget campagne",
+      "expectedCollection": "modules",
+      "expectedId": "campaign"
+    },
+    {
+      "query": "crm mcp",
+      "expectedCollection": "decisions",
+      "expectedId": "decision-mcp"
+    },
+    {
+      "query": "brief produit",
+      "expectedCollection": "artifacts",
+      "expectedId": "artifact-brief"
+    }
+  ],
   "agents": [
     {
       "id": "orchestrator",
@@ -49,6 +130,7 @@
       "name": "Product Intelligence",
       "enabled": true,
       "policy": "Brief produit valide par le client",
+      "keywords": ["produit", "brief", "positionnement", "offre"],
       "monthlyBudget": 120,
       "approvals": 2
     },
@@ -57,6 +139,7 @@
       "name": "Market Research",
       "enabled": true,
       "policy": "Sources citees et hypotheses tracees",
+      "keywords": ["marche", "concurrents", "segments", "recherche"],
       "monthlyBudget": 220,
       "approvals": 1
     },
@@ -65,6 +148,7 @@
       "name": "Campaign Builder",
       "enabled": true,
       "policy": "Validation avant publication ou depense",
+      "keywords": ["campagne", "budget", "media", "publication"],
       "monthlyBudget": 300,
       "approvals": 3
     },
@@ -73,6 +157,7 @@
       "name": "MCP Integrations",
       "enabled": false,
       "policy": "OAuth, scopes limites et audit par connecteur",
+      "keywords": ["mcp", "crm", "integration", "connecteur"],
       "monthlyBudget": 180,
       "approvals": 4
     }

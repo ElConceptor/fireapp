@@ -18,6 +18,7 @@ sont decrits dans:
 
 - [docs/agentic-marketing-saas-architecture.md](docs/agentic-marketing-saas-architecture.md)
 - [docs/data-hub-model.md](docs/data-hub-model.md)
+- [docs/journey-ux-review.md](docs/journey-ux-review.md)
 - [docs/runtime-contracts.md](docs/runtime-contracts.md)
 - [docs/project-agenda.md](docs/project-agenda.md)
 

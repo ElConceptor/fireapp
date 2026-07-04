@@ -1,9 +1,20 @@
 const DATA_URL = './data/prototype-data.json';
 
 let prototypeData = null;
+let intakeAnswers = {};
+let artifactFilter = '';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 function renderList(targetId, items, renderItem) {
@@ -40,6 +51,126 @@ function computeBudget() {
   };
 }
 
+function searchableRecords() {
+  const moduleRecords = prototypeData.modules.map((module) => ({
+    id: module.id,
+    type: 'Module',
+    title: module.name,
+    text: `${module.name} ${module.policy} ${(module.keywords || []).join(' ')} ${module.monthlyBudget} ${module.enabled ? 'actif' : 'inactif'}`
+  }));
+  const agentRecords = prototypeData.agents.map((agent) => ({
+    id: agent.id,
+    type: 'Agent',
+    title: agent.name,
+    text: `${agent.name} ${agent.role} ${agent.modelTier}`
+  }));
+  const decisionRecords = prototypeData.decisions.map((decision) => ({
+    id: decision.id,
+    type: 'Decision',
+    title: decision.title,
+    text: `${decision.title} ${decision.owner} ${decision.risk} ${decision.status}`
+  }));
+  const artifactRecords = prototypeData.artifacts.map((artifact) => {
+    const ownerModule = moduleById(artifact.moduleId);
+
+    return {
+      id: artifact.id,
+      type: 'Artefact',
+      title: artifact.name,
+      text: `${artifact.name} ${artifact.type} ${artifact.status} ${ownerModule ? ownerModule.name : ''}`
+    };
+  });
+
+  return moduleRecords.concat(agentRecords, decisionRecords, artifactRecords);
+}
+
+function runQuery(query) {
+  const normalizedQuery = query.trim().toLowerCase();
+
+  if (!normalizedQuery) {
+    return [];
+  }
+
+  const terms = normalizedQuery.split(/\s+/).filter(Boolean);
+
+  return searchableRecords()
+    .map((record) => {
+      const normalizedText = record.text.toLowerCase();
+      const score = terms.reduce((total, term) => total + (normalizedText.includes(term) ? 1 : 0), 0);
+      return { ...record, score };
+    })
+    .filter((record) => record.score > 0)
+    .sort((left, right) => right.score - left.score || left.title.localeCompare(right.title));
+}
+
+function renderQueryResults(results, query) {
+  const target = document.getElementById('query-results');
+
+  if (!query.trim()) {
+    target.innerHTML = '<p>Essayez une recherche: budget campagne, CRM MCP ou brief produit.</p>';
+    return;
+  }
+
+  if (!results.length) {
+    target.innerHTML = '<p>Aucun resultat. L orchestrateur devra demander plus de contexte.</p>';
+    return;
+  }
+
+  target.innerHTML = results.slice(0, 6).map((result) => `
+    <article class="query-result">
+      <span class="pill">${result.type}</span>
+      <strong>${result.title}</strong>
+    </article>
+  `).join('');
+}
+
+function computeReadiness() {
+  const requiredQuestions = prototypeData.intakeQuestions.filter((question) => question.required);
+  const completedRequired = requiredQuestions.filter((question) =>
+    (intakeAnswers[question.id] || '').trim().length > 0
+  );
+  const score = requiredQuestions.length === 0
+    ? 100
+    : Math.round((completedRequired.length / requiredQuestions.length) * 100);
+
+  return {
+    score,
+    missing: requiredQuestions.filter((question) => !completedRequired.includes(question))
+  };
+}
+
+function renderIntake() {
+  renderList('intake-form', prototypeData.intakeQuestions, (question) => `
+    <label class="input-group" for="intake-${question.id}">
+      <span>${escapeHtml(question.label)}${question.required ? ' *' : ''}</span>
+      <textarea id="intake-${question.id}" data-intake-id="${question.id}" rows="3" placeholder="${escapeHtml(question.placeholder)}">${escapeHtml(intakeAnswers[question.id] || '')}</textarea>
+    </label>
+  `);
+
+  document.querySelectorAll('[data-intake-id]').forEach((input) => {
+    input.addEventListener('input', () => {
+      intakeAnswers[input.dataset.intakeId] = input.value;
+      renderReadiness();
+    });
+  });
+
+  renderReadiness();
+}
+
+function renderReadiness() {
+  const readiness = computeReadiness();
+  document.getElementById('readiness-score').textContent = `${readiness.score}%`;
+  document.getElementById('readiness-summary').textContent = readiness.score === 100
+    ? 'Brief pret pour lancer les agents.'
+    : 'Informations encore necessaires avant orchestration.';
+
+  const items = readiness.missing.length
+    ? readiness.missing.map((question) => `Manque: ${question.label}`)
+    : ['Produit compris', 'Cible identifiee', 'Objectif exploitable'];
+
+  renderList('readiness-list', items, (item) => `<li>${item}</li>`);
+}
+
 function renderMetrics() {
   const budget = computeBudget();
   const metrics = [
@@ -63,6 +194,7 @@ function renderMetrics() {
 }
 
 function renderPrototype() {
+  renderIntake();
   renderMetrics();
 
   renderList('workflow', prototypeData.workflow, (step, index) => `
@@ -115,7 +247,14 @@ function renderPrototype() {
     </button>
   `);
 
-  renderList('artifact-table', prototypeData.artifacts, (artifact) => {
+  const normalizedArtifactFilter = artifactFilter.trim().toLowerCase();
+  const filteredArtifacts = prototypeData.artifacts.filter((artifact) => {
+    const ownerModule = moduleById(artifact.moduleId);
+    const haystack = `${artifact.name} ${artifact.type} ${artifact.status} ${ownerModule ? ownerModule.name : ''}`.toLowerCase();
+    return !normalizedArtifactFilter || haystack.includes(normalizedArtifactFilter);
+  });
+
+  renderList('artifact-table', filteredArtifacts, (artifact) => {
     const ownerModule = moduleById(artifact.moduleId);
     const isActive = ownerModule && ownerModule.enabled;
     const moduleName = ownerModule ? ownerModule.name : 'Module inconnu';
@@ -131,6 +270,21 @@ function renderPrototype() {
     `;
   });
 
+  if (!filteredArtifacts.length) {
+    document.getElementById('artifact-table').innerHTML = '<p>Aucun artefact ne correspond au filtre.</p>';
+  }
+
+  renderList('journey-map', prototypeData.journeys, (journey) => `
+    <article class="journey-card">
+      <strong>${journey.actor}</strong>
+      <h3>${journey.title}</h3>
+      <ol>
+        ${journey.steps.map((step) => `<li>${step}</li>`).join('')}
+      </ol>
+      <p>${journey.successMetric}</p>
+    </article>
+  `);
+
   renderList('agenda-list', prototypeData.agenda, (item) => `
     <article class="agenda-item">
       <strong>${item.status}</strong>
@@ -145,6 +299,10 @@ function renderPrototype() {
       renderPrototype();
     });
   });
+
+  const queryInput = document.getElementById('global-query');
+  const currentQuery = queryInput.value;
+  renderQueryResults(runQuery(currentQuery), currentQuery);
 }
 
 function renderLoadError(error) {
@@ -165,6 +323,18 @@ async function start() {
     document.getElementById('mission-title').textContent = prototypeData.mission.title;
     document.getElementById('mission-summary').textContent = prototypeData.mission.summary;
     renderPrototype();
+    document.getElementById('run-query').addEventListener('click', () => {
+      const queryInput = document.getElementById('global-query');
+      renderQueryResults(runQuery(queryInput.value), queryInput.value);
+    });
+    document.getElementById('global-query').addEventListener('input', (event) => {
+      renderQueryResults(runQuery(event.target.value), event.target.value);
+    });
+    document.getElementById('artifact-filter').addEventListener('input', (event) => {
+      artifactFilter = event.target.value;
+      renderPrototype();
+      document.getElementById('artifact-filter').focus();
+    });
   } catch (error) {
     renderLoadError(error);
   }

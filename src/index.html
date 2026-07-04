@@ -20,6 +20,8 @@
         </span>
       </a>
       <nav aria-label="Navigation principale">
+        <a href="#intake">Intake</a>
+        <a href="#query">Query</a>
         <a href="#mission">Mission</a>
         <a href="#agents">Agents</a>
         <a href="#governance">Gouvernance</a>
@@ -53,6 +55,42 @@
       </section>
 
       <div id="prototype-error" class="prototype-error" hidden></div>
+
+      <section id="intake" class="section split">
+        <article class="panel">
+          <p class="eyebrow">Client intake</p>
+          <h2>Premiere mission: comprendre le produit.</h2>
+          <p>
+            Le souscripteur fournit le minimum utile. L orchestrateur detecte les
+            manques avant de lancer les agents.
+          </p>
+          <form id="intake-form" class="intake-form"></form>
+        </article>
+        <article class="panel readiness-panel">
+          <p class="eyebrow">Qualite du brief</p>
+          <h2 id="readiness-score">0%</h2>
+          <p id="readiness-summary">Renseigner les champs requis pour demarrer.</p>
+          <ul id="readiness-list" class="check-list"></ul>
+        </article>
+      </section>
+
+      <section id="query" class="section split">
+        <article class="panel">
+          <p class="eyebrow">Query Data Hub</p>
+          <h2>Rechercher dans modules, agents, decisions et artefacts.</h2>
+          <label class="field-label" for="global-query">Recherche</label>
+          <div class="query-row">
+            <input id="global-query" type="search" placeholder="Ex: budget campagne, CRM MCP, brief produit">
+            <button id="run-query" class="button primary" type="button">Query</button>
+          </div>
+          <div id="query-results" class="query-results" aria-live="polite"></div>
+        </article>
+        <article class="panel">
+          <p class="eyebrow">Journeys</p>
+          <h2>Parcours a verifier avant chaque release.</h2>
+          <div id="journey-map" class="journey-map"></div>
+        </article>
+      </section>
 
       <section id="mission" class="section">
         <div class="section-title">
@@ -127,6 +165,8 @@
         <div class="section-title">
           <p class="eyebrow">Artefacts</p>
           <h2>Les livrables produits par l equipe agentique.</h2>
+          <label class="field-label" for="artifact-filter">Filtrer les artefacts</label>
+          <input id="artifact-filter" type="search" placeholder="Ex: brief, campagne, permissions">
         </div>
         <div id="artifact-table" class="artifact-table"></div>
       </section>

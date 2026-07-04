@@ -7,6 +7,7 @@
     "build": "node scripts/build-static.js",
     "clean": "node scripts/clean.js",
     "lint": "node scripts/validate-static.js",
-    "serve": "node scripts/serve-static.js"
+    "serve": "node scripts/serve-static.js",
+    "test:journeys": "node scripts/test-journeys.js"
   }
 }
