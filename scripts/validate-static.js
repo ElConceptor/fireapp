@@ -4,6 +4,9 @@ const { execFileSync } = require('child_process');
 
 const root = path.resolve(__dirname, '..');
 const requiredFiles = [
+  'AGENTS.md',
+  '.github/workflows/ci.yml',
+  '.github/pull_request_template.md',
   'src/index.html',
   'src/styles.css',
   'src/app.js',

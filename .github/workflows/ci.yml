@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint contract and files
+        run: npm run lint
+
+      - name: Journey and query tests
+        run: npm run test:journeys
+
+      - name: Backend security tests
+        run: npm run test:backend
+
+      - name: Build static bundle
+        run: npm run build
+
+      - name: Guard against legacy dependencies
+        run: |
+          if grep -Eiq 'ionic|cordova|firebase|angularfire|node-sass' package.json package-lock.json; then
+            echo "Legacy dependency term found in package manifests."
+            exit 1
+          fi
+          echo "No legacy dependency terms found."

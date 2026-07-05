@@ -34,55 +34,77 @@ d action, avec validation humaine et suivi strict des couts.
 - Phase 1 mise en prod livree dans `server/`: auth scrypt + sessions,
   isolation multi-tenant SQLite, enforcement serveur des plans, protection
   des prompts cote serveur et audit persistant (`docs/backend-phase1.md`).
+- Passation structuree pour agents dans `AGENTS.md`.
+- CI GitHub Actions et template de PR dans `.github/`.
 - Scripts projet:
-  - `npm run lint`: valide la base propre;
-  - `npm run build`: copie le prototype dans `dist/`;
-  - `npm run serve`: sert `dist/` ou `src/` localement.
+  - `npm run lint`: valide contrat, fichiers requis et syntaxe;
+  - `npm run test:journeys`: parcours produit et query;
+  - `npm run test:backend`: auth, isolation tenant, enforcement, audit;
+  - `npm run build`: copie prototype + docs dans `dist/`;
+  - `npm run serve`: UI statique (4173);
+  - `npm run start`: backend multi-tenant + UI (4180).
 
-## Agenda technique priorise
+## Roadmap de mise en production par phases
 
-### 1. Stabiliser la base propre
+### Phase 0 - Prototype et contrat (FAIT)
 
-- Statut: fait pour le prototype statique actuel.
-- Garder le depot sans artefacts historiques ni dependances inutiles.
-- Ajouter une vraie stack applicative seulement quand les modeles de donnees et
-  les workflows sont decides.
+- Prototype UI complet sans dependance dans `src/`.
+- Contrat runtime versionne dans `src/data/prototype-data.json`.
+- Chaine intake -> mission -> taches -> brief GTM genere.
+- Decisions approve/reject, journal d audit, chat agents avec avatars et vocal.
+- Rapports consulting, outils agents, autonomie par module, reseau QA.
 
-### 2. Consolider le prototype SaaS
+### Phase 1 - Socle backend multi-tenant (FAIT)
 
-- Statut: console admin interactive ajoutee au prototype.
-- Statut: agents, modules, workflow, decisions et artefacts sont maintenant
-  alimentes par un contrat JSON versionne.
-- Statut: intake, query globale, filtre artefacts et journey map ajoutes.
-- Ajouter une vue detail mission: objectifs, agents, taches et timeline.
-- Enrichir la vue couts IA avec alertes et arbitrages modele.
-- Ajouter actions approve/reject sur les validations de la campagne test.
+- Auth scrypt + sessions Bearer + RBAC (`server/auth.js`).
+- Isolation multi-tenant SQLite, concue pour migrer vers PostgreSQL + RLS.
+- Enforcement serveur des plans (403 sur module hors plan, meme forge).
+- Protection des prompts cote serveur, audit persistant par tenant.
+- Suite `npm run test:backend`: auth, IDOR, enforcement, audit.
 
-### 3. Definir le Data Hub
+### Phase 2 - Orchestrateur LLM reel (PROCHAINE)
 
-- Statut: modele initial documente dans `docs/data-hub-model.md`.
-- Definir la politique de retention et de chiffrement.
-- Preparer l ajout d un vector store pour la memoire semantique.
+- Route `POST /api/missions` reutilisant `missionPlan` du contrat.
+- Un `ai_usage_events` ecrit par tache (nouvelle table a creer).
+- Routage multi-modele par niveau d agent (debutant/confirme/expert).
+- Decrement des credits du plan + coupure a 100% du quota.
+- Prompts resolus cote serveur apres verif plan/role.
+- Connecter le front a `/api/runtime` pour refleter l etat serveur.
 
-### 4. Orchestration agentique
+### Phase 3 - Monetisation reelle
 
-- Decrire les agents en configuration: role, outils, modele par defaut, budget,
-  permissions et conditions de delegation.
-- Ajouter le routage de modeles par cout et criticite.
-- Ajouter un registre de validation humaine pour actions sensibles.
+- Stripe checkout + webhooks abonnement + mapping plan/tenant.
+- Facturation des credits hors quota, essai/demo sandbox.
+- Application stricte des limites (connecteurs, packs, niveaux).
 
-### 5. Securite et gouvernance
+### Phase 4 - Connecteurs et outils reels
 
-- Mettre en place RBAC multi-tenant.
-- Separer secrets, configurations et permissions MCP.
-- Journaliser toutes les actions sensibles.
-- Ajouter des plafonds de cout par tenant, module et mission.
+- Demarrer etroit: Google Drive + Brevo + GA4.
+- Coffre de secrets (KMS), scopes OAuth minimaux, revocation.
+- Etendre au reste du catalogue apres preuve de la boucle envoyer -> mesurer.
 
-### 6. Integrations externes
+### Phase 5 - Durcissement avant ouverture publique
 
-- Commencer par imports documents et CRM simple.
-- Ajouter MCP seulement avec scopes limites et audit.
-- Prioriser connecteurs utiles: Drive/Notion, CRM, email, analytics, ads.
+- Audit append-only branche sur SIEM + alertes.
+- Rate limiting par tenant/IP/route.
+- Defense anti-injection de prompt + agent red team en continu.
+- DPIA + DPA sous-traitants IA + effacement par tenant (RGPD).
+- TLS + reverse proxy + WAF; headers securite deja en place cote API.
+
+### Phase 6 - Deploiement et observabilite
+
+- Hebergement: Vercel (app) + Neon/Supabase (Postgres) + S3/R2 (objets).
+- CI (deja en place) en gate de deploiement + scan de dependances.
+- OpenTelemetry + Grafana: latence, cout IA par tenant, taux d erreur agents.
+- Environnements dev/staging/prod separes.
+
+## Outillage developpeur (GitHub)
+
+- CI GitHub Actions: `.github/workflows/ci.yml` (lint, journeys, backend,
+  build, garde anti-legacy) sur push master et pull requests.
+- Template de PR: `.github/pull_request_template.md` avec checklist des regles
+  structurantes.
+- Passation agents: `AGENTS.md` a la racine, lu en premier par tout agent.
 
 ## Decisions ouvertes
 

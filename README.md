@@ -11,6 +11,12 @@ proposer un budget et garder le souscripteur dans la boucle de decision.
 - Admin Console: modules activables, limites de cout et gouvernance.
 - Agenda projet: decisions, risques et prochaines etapes.
 
+## Reprise par un autre agent
+
+Tout agent ou developpeur qui reprend le projet doit lire [AGENTS.md](AGENTS.md)
+en premier: regles structurantes, architecture, commandes de verification et
+prochaine tache prioritaire.
+
 ## Documentation
 
 La vision produit, l architecture, la securite, les modules et la feuille de route
