@@ -1,10 +1,129 @@
 {
-  "version": "2026-07-04.1",
+  "version": "2026-07-05.1",
   "mission": {
     "title": "Comprendre le produit et proposer le premier plan GTM",
     "summary": "Le produit comprend les offres du souscripteur, organise les donnees dans un Data Hub, coordonne des agents specialises et garde l humain dans la boucle pour les decisions sensibles.",
     "defaultUsageRate": 0.62
   },
+  "pricingPlans": [
+    {
+      "id": "starter",
+      "rank": 1,
+      "name": "Starter",
+      "monthlyPrice": 149,
+      "tagline": "Comprendre son produit et produire son premier brief GTM.",
+      "aiCredits": 300,
+      "maxAgentLevel": "debutant",
+      "moduleIds": ["product"],
+      "integrationAllowance": "3 connecteurs essentiels",
+      "supportLevel": "Email 48h",
+      "bestFor": "Independants et petites equipes qui demarrent"
+    },
+    {
+      "id": "growth",
+      "rank": 2,
+      "name": "Growth",
+      "monthlyPrice": 449,
+      "tagline": "Une equipe agentique complete pour generer des leads chaque mois.",
+      "aiCredits": 1200,
+      "maxAgentLevel": "confirme",
+      "moduleIds": ["product", "market", "campaign"],
+      "integrationAllowance": "8 connecteurs marketing et CRM",
+      "supportLevel": "Prioritaire + onboarding",
+      "bestFor": "PME SaaS avec objectifs de pipeline"
+    },
+    {
+      "id": "scale",
+      "rank": 3,
+      "name": "Scale",
+      "monthlyPrice": 1190,
+      "tagline": "Agents experts, MCP custom et gouvernance complete des couts.",
+      "aiCredits": 4000,
+      "maxAgentLevel": "expert",
+      "moduleIds": ["product", "market", "campaign", "mcp"],
+      "integrationAllowance": "Connecteurs illimites + MCP custom",
+      "supportLevel": "CSM dedie",
+      "bestFor": "Scale-ups et equipes revenue operations"
+    }
+  ],
+  "agentLevels": [
+    {
+      "id": "debutant",
+      "rank": 1,
+      "name": "Debutant",
+      "modelTier": "Economique",
+      "costMultiplier": 0.6,
+      "description": "Taches guidees par des prompts structures: extraction, resume, variantes simples."
+    },
+    {
+      "id": "confirme",
+      "rank": 2,
+      "name": "Confirme",
+      "modelTier": "Intermediaire",
+      "costMultiplier": 1,
+      "description": "Analyse marche, synthese multi-documents et campagnes completes avec arbitrages."
+    },
+    {
+      "id": "expert",
+      "rank": 3,
+      "name": "Expert",
+      "modelTier": "Premium",
+      "costMultiplier": 1.8,
+      "description": "Strategie GTM, arbitrage budget, consolidation finale et recommandations avancees."
+    }
+  ],
+  "promptPacks": [
+    {
+      "id": "pack-product-discovery",
+      "name": "Product Discovery Pack",
+      "moduleId": "product",
+      "minPlan": "starter",
+      "promptCount": 12,
+      "keywords": ["decouverte", "produit", "usp", "proposition de valeur"],
+      "outcome": "Brief produit, USP, FAQ objections et messages fondateurs.",
+      "samplePrompt": "Analyse ces documents produit et identifie les 3 benefices les plus differenciants pour {persona}."
+    },
+    {
+      "id": "pack-market-research",
+      "name": "Market Research Pack",
+      "moduleId": "market",
+      "minPlan": "growth",
+      "promptCount": 15,
+      "keywords": ["marche", "concurrents", "segments", "icp"],
+      "outcome": "Carte concurrentielle, segments prioritaires et angles de differenciation.",
+      "samplePrompt": "Compare notre offre a {concurrent} et propose 3 angles ou nous gagnons pour {segment}."
+    },
+    {
+      "id": "pack-campaign-launch",
+      "name": "Campaign Launch Pack",
+      "moduleId": "campaign",
+      "minPlan": "growth",
+      "promptCount": 18,
+      "keywords": ["campagne", "linkedin", "email", "landing"],
+      "outcome": "Messages multicanaux, sequence email, briefs creatifs et plan 30 jours.",
+      "samplePrompt": "Genere 5 accroches LinkedIn pour {persona} avec l objection principale {objection} et un CTA vers {offre}."
+    },
+    {
+      "id": "pack-sales-playbook",
+      "name": "Sales Playbook Pack",
+      "moduleId": "campaign",
+      "minPlan": "scale",
+      "promptCount": 20,
+      "keywords": ["playbook", "vente", "objections", "scripts"],
+      "outcome": "Scripts d appel, reponses aux objections, qualification et relances.",
+      "samplePrompt": "Construis un script de discovery call pour {persona} avec 5 questions de qualification et 3 reponses aux objections {objections}."
+    },
+    {
+      "id": "pack-expert-gtm",
+      "name": "Expert GTM Strategy Pack",
+      "moduleId": "campaign",
+      "minPlan": "scale",
+      "promptCount": 14,
+      "keywords": ["strategie", "gtm", "budget", "arbitrage"],
+      "outcome": "Arbitrages budget, priorisation canaux et plan trimestre valide par direction.",
+      "samplePrompt": "Avec un budget de {budget}, propose 3 scenarios GTM avec risques, hypotheses et KPI de decision."
+    }
+  ],
   "demoCustomer": {
     "id": "tenant-demo-acme",
     "companyName": "Acme Sales Academy",
@@ -13,7 +132,8 @@
     "targetAudience": "Directions commerciales de PME SaaS en Europe",
     "objective": "Generer 50 leads qualifies en 30 jours",
     "constraints": "Budget media plafonne a 2 500 EUR, validation humaine obligatoire avant publication",
-    "plan": "Growth Pilot",
+    "planId": "growth",
+    "plan": "Growth",
     "capabilities": [
       "Product Intelligence",
       "Market Research",
@@ -76,6 +196,18 @@
         "Valider le brief produit"
       ],
       "successMetric": "Brief produit valide et exploitable par les agents"
+    },
+    {
+      "id": "plan-selection",
+      "title": "Acheteur: choisir un plan",
+      "actor": "Decideur",
+      "steps": [
+        "Comparer les plans",
+        "Verifier niveaux d agents inclus",
+        "Verifier prompt packs et connecteurs",
+        "Selectionner le plan adapte"
+      ],
+      "successMetric": "Plan choisi avec comprehension claire de la valeur incluse"
     },
     {
       "id": "admin-module-control",
@@ -153,6 +285,11 @@
       "query": "stripe billing",
       "expectedCollection": "integrations",
       "expectedId": "stripe"
+    },
+    {
+      "query": "playbook vente",
+      "expectedCollection": "promptPacks",
+      "expectedId": "pack-sales-playbook"
     }
   ],
   "agents": [
@@ -307,7 +444,8 @@
       "name": "HubSpot",
       "use": "Synchroniser entreprises, contacts, deals et statut des leads.",
       "connection": "OAuth ou MCP serveur CRM",
-      "costProfile": "Freemium puis abonnement"
+      "costProfile": "Freemium puis abonnement",
+      "minPlan": "growth"
     },
     {
       "id": "salesforce",
@@ -315,7 +453,8 @@
       "name": "Salesforce",
       "use": "Lire pipeline, pousser campagnes et enrichir opportunites.",
       "connection": "OAuth, API REST ou MCP",
-      "costProfile": "Entreprise"
+      "costProfile": "Entreprise",
+      "minPlan": "scale"
     },
     {
       "id": "pipedrive",
@@ -323,7 +462,8 @@
       "name": "Pipedrive",
       "use": "Suivre deals PME et activites sales.",
       "connection": "API token ou OAuth",
-      "costProfile": "PME"
+      "costProfile": "PME",
+      "minPlan": "growth"
     },
     {
       "id": "google-drive",
@@ -331,7 +471,8 @@
       "name": "Google Drive",
       "use": "Importer briefs, presentations, offres et assets.",
       "connection": "OAuth scopes limites",
-      "costProfile": "Inclus Workspace"
+      "costProfile": "Inclus Workspace",
+      "minPlan": "starter"
     },
     {
       "id": "notion",
@@ -339,7 +480,8 @@
       "name": "Notion",
       "use": "Importer pages produit, wiki sales et process internes.",
       "connection": "OAuth ou API integration",
-      "costProfile": "Freemium"
+      "costProfile": "Freemium",
+      "minPlan": "starter"
     },
     {
       "id": "brevo",
@@ -347,7 +489,8 @@
       "name": "Brevo",
       "use": "Envoyer campagnes email et suivre ouvertures/clics.",
       "connection": "API key restreinte",
-      "costProfile": "Economique"
+      "costProfile": "Economique",
+      "minPlan": "starter"
     },
     {
       "id": "mailchimp",
@@ -355,7 +498,8 @@
       "name": "Mailchimp",
       "use": "Audiences marketing, newsletters et automation simple.",
       "connection": "OAuth ou API key",
-      "costProfile": "PME"
+      "costProfile": "PME",
+      "minPlan": "growth"
     },
     {
       "id": "linkedin-ads",
@@ -363,7 +507,8 @@
       "name": "LinkedIn Ads",
       "use": "Activer campagnes B2B ciblees apres validation budget.",
       "connection": "OAuth Ads API",
-      "costProfile": "Media budget"
+      "costProfile": "Media budget",
+      "minPlan": "growth"
     },
     {
       "id": "google-ads",
@@ -371,7 +516,8 @@
       "name": "Google Ads",
       "use": "Campagnes search, remarketing et mesure conversions.",
       "connection": "OAuth Ads API",
-      "costProfile": "Media budget"
+      "costProfile": "Media budget",
+      "minPlan": "growth"
     },
     {
       "id": "ga4",
@@ -379,7 +525,8 @@
       "name": "Google Analytics 4",
       "use": "Lire trafic, conversions et performance landing pages.",
       "connection": "OAuth Analytics API",
-      "costProfile": "Gratuit"
+      "costProfile": "Gratuit",
+      "minPlan": "starter"
     },
     {
       "id": "posthog",
@@ -387,7 +534,8 @@
       "name": "PostHog",
       "use": "Suivre evenements produit et funnels self-serve.",
       "connection": "API key projet",
-      "costProfile": "Open source / cloud"
+      "costProfile": "Open source / cloud",
+      "minPlan": "growth"
     },
     {
       "id": "slack",
@@ -395,7 +543,8 @@
       "name": "Slack",
       "use": "Notifier decisions, validations et alertes cout.",
       "connection": "OAuth bot scopes limites",
-      "costProfile": "Freemium"
+      "costProfile": "Freemium",
+      "minPlan": "starter"
     },
     {
       "id": "teams",
@@ -403,7 +552,8 @@
       "name": "Microsoft Teams",
       "use": "Boucle de validation et alertes pour organisations Microsoft.",
       "connection": "Graph API",
-      "costProfile": "Inclus M365"
+      "costProfile": "Inclus M365",
+      "minPlan": "growth"
     },
     {
       "id": "stripe",
@@ -411,7 +561,8 @@
       "name": "Stripe",
       "use": "Abonnements SaaS, plans, facturation et limites par usage.",
       "connection": "API key restreinte + webhooks",
-      "costProfile": "Pay-as-you-go"
+      "costProfile": "Pay-as-you-go",
+      "minPlan": "growth"
     },
     {
       "id": "n8n",
@@ -419,7 +570,8 @@
       "name": "n8n",
       "use": "Automatisations open source entre outils clients.",
       "connection": "Webhook ou self-hosted connector",
-      "costProfile": "Open source / cloud"
+      "costProfile": "Open source / cloud",
+      "minPlan": "scale"
     },
     {
       "id": "custom-mcp",
@@ -427,7 +579,8 @@
       "name": "MCP custom server",
       "use": "Connecter outils internes via permissions auditees.",
       "connection": "MCP server par tenant",
-      "costProfile": "Selon hebergement"
+      "costProfile": "Selon hebergement",
+      "minPlan": "scale"
     }
   ],
   "agenda": [
@@ -436,8 +589,8 @@
       "text": "Base propre sans ancien prototype legacy."
     },
     {
-      "status": "Produit",
-      "text": "Consolider mission detaillee, objectifs, agents, decisions et artefacts."
+      "status": "Monetisation",
+      "text": "Plans Starter/Growth/Scale, niveaux d agents et prompt packs actives."
     },
     {
       "status": "Data",

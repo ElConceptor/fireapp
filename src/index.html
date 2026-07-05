@@ -20,6 +20,8 @@
         </span>
       </a>
       <nav aria-label="Navigation principale">
+        <a href="#pricing">Plans</a>
+        <a href="#prompts">Prompts</a>
         <a href="#intake">Intake</a>
         <a href="#demo-account">Compte demo</a>
         <a href="#campaign">Campagne</a>
@@ -58,6 +60,31 @@
       </section>
 
       <div id="prototype-error" class="prototype-error" hidden></div>
+
+      <section id="pricing" class="section">
+        <div class="section-title">
+          <p class="eyebrow">Offre monetisable V1</p>
+          <h2>Choisir un plan selon le niveau d agents et la valeur incluse.</h2>
+          <p>
+            Chaque plan combine credits IA, niveaux d agents, prompt packs et
+            connecteurs. Selectionner un plan met a jour toute la plateforme.
+          </p>
+        </div>
+        <div id="pricing-grid" class="pricing-grid"></div>
+        <div id="plan-summary" class="plan-summary"></div>
+      </section>
+
+      <section id="prompts" class="section">
+        <div class="section-title">
+          <p class="eyebrow">Prompt library</p>
+          <h2>Les prompts sont la valeur du produit.</h2>
+          <p>
+            Chaque pack encode l expertise marketing et sales. Les packs se
+            debloquent selon le plan choisi.
+          </p>
+        </div>
+        <div id="prompt-packs" class="prompt-grid"></div>
+      </section>
 
       <section id="intake" class="section split">
         <article class="panel">
@@ -139,7 +166,12 @@
         <div class="section-title">
           <p class="eyebrow">Equipe virtuelle</p>
           <h2>Agents collaboratifs avec delegation de modeles.</h2>
+          <p>
+            Chaque agent travaille a un niveau d expertise. Le niveau change le
+            modele utilise et le cout unitaire des taches.
+          </p>
         </div>
+        <div id="agent-level-selector" class="level-selector" role="group" aria-label="Niveau des agents"></div>
         <div id="agents-grid" class="card-grid"></div>
       </section>
 

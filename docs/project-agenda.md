@@ -18,6 +18,8 @@ d action, avec validation humaine et suivi strict des couts.
 - Contrat runtime documente dans `docs/runtime-contracts.md`.
 - Passe journey, UI/UX et query documentee dans `docs/journey-ux-review.md`.
 - Scenario compte client et campagne test documente dans `docs/demo-campaign-scenario.md`.
+- Monetisation V1 (plans, niveaux d agents, prompt packs) documentee dans
+  `docs/monetization-v1.md` et active dans le prototype.
 - Scripts projet:
   - `npm run lint`: valide la base propre;
   - `npm run build`: copie le prototype dans `dist/`;

@@ -19,6 +19,9 @@ l interface. Le meme format pourra ensuite etre servi par une API multi-tenant.
 | journeys | Parcours utilisateurs, acteurs, etapes et metriques de succes |
 | intakeQuestions | Questions posees au souscripteur pour cadrer la mission |
 | queryExamples | Exemples de recherche attendus pour verifier le Data Hub |
+| pricingPlans | Plans Starter/Growth/Scale avec credits IA, niveau agent max, modules et connecteurs inclus |
+| agentLevels | Niveaux debutant/confirme/expert avec tier modele et multiplicateur de cout |
+| promptPacks | Bibliotheque de prompts monetisee, gated par plan minimum |
 | agents | Equipe agentique et cout unitaire par niveau de modele |
 | modules | Services activables, mots-cles de recherche, budget mensuel et validations requises |
 | dataHubItems | Capacites affichees dans la memoire partagee |

@@ -5,6 +5,8 @@ let intakeAnswers = {};
 let artifactFilter = '';
 let demoAccountCreated = false;
 let campaignPrepared = false;
+let selectedPlanId = 'growth';
+let selectedAgentLevelId = 'confirme';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -34,6 +36,44 @@ function activeModules() {
 
 function moduleById(moduleId) {
   return prototypeData.modules.find((module) => module.id === moduleId);
+}
+
+function planById(planId) {
+  return prototypeData.pricingPlans.find((plan) => plan.id === planId);
+}
+
+function levelById(levelId) {
+  return prototypeData.agentLevels.find((level) => level.id === levelId);
+}
+
+function selectedPlan() {
+  return planById(selectedPlanId);
+}
+
+function selectedLevel() {
+  return levelById(selectedAgentLevelId);
+}
+
+function planAllows(minPlanId) {
+  return selectedPlan().rank >= planById(minPlanId).rank;
+}
+
+function maxLevelForPlan(plan) {
+  return levelById(plan.maxAgentLevel);
+}
+
+function applyPlanConstraints() {
+  const plan = selectedPlan();
+
+  prototypeData.modules.forEach((module) => {
+    if (!plan.moduleIds.includes(module.id)) {
+      module.enabled = false;
+    }
+  });
+
+  if (selectedLevel().rank > maxLevelForPlan(plan).rank) {
+    selectedAgentLevelId = plan.maxAgentLevel;
+  }
 }
 
 function computeBudget() {
@@ -88,8 +128,14 @@ function searchableRecords() {
     title: integration.name,
     text: `${integration.name} ${integration.category} ${integration.use} ${integration.connection} ${integration.costProfile}`
   }));
+  const promptPackRecords = prototypeData.promptPacks.map((pack) => ({
+    id: pack.id,
+    type: 'Prompt pack',
+    title: pack.name,
+    text: `${pack.name} ${(pack.keywords || []).join(' ')} ${pack.outcome}`
+  }));
 
-  return moduleRecords.concat(agentRecords, decisionRecords, artifactRecords, integrationRecords);
+  return moduleRecords.concat(agentRecords, decisionRecords, artifactRecords, integrationRecords, promptPackRecords);
 }
 
 function runQuery(query) {
@@ -253,12 +299,101 @@ function renderTestCampaign() {
   `;
 }
 
+function renderPricing() {
+  const plan = selectedPlan();
+
+  renderList('pricing-grid', prototypeData.pricingPlans, (pricingPlan) => `
+    <button class="pricing-card" data-plan-id="${pricingPlan.id}" data-selected="${pricingPlan.id === selectedPlanId}" type="button">
+      <span class="pill">${pricingPlan.id === selectedPlanId ? 'Plan actif' : 'Choisir'}</span>
+      <h3>${escapeHtml(pricingPlan.name)}</h3>
+      <p class="price"><strong>${formatEuro(pricingPlan.monthlyPrice)}</strong>/mois</p>
+      <p>${escapeHtml(pricingPlan.tagline)}</p>
+      <ul>
+        <li>${pricingPlan.aiCredits.toLocaleString('fr-FR')} credits IA</li>
+        <li>Agents jusqu au niveau ${escapeHtml(levelById(pricingPlan.maxAgentLevel).name)}</li>
+        <li>${pricingPlan.moduleIds.length} module(s) inclus</li>
+        <li>${escapeHtml(pricingPlan.integrationAllowance)}</li>
+        <li>Support: ${escapeHtml(pricingPlan.supportLevel)}</li>
+      </ul>
+      <small>${escapeHtml(pricingPlan.bestFor)}</small>
+    </button>
+  `);
+
+  const unlockedPacks = prototypeData.promptPacks.filter((pack) => planAllows(pack.minPlan)).length;
+  const unlockedIntegrations = prototypeData.integrations.filter((integration) => planAllows(integration.minPlan)).length;
+
+  document.getElementById('plan-summary').innerHTML = `
+    <strong>Plan ${escapeHtml(plan.name)}:</strong>
+    ${unlockedPacks}/${prototypeData.promptPacks.length} prompt packs debloques ·
+    ${unlockedIntegrations}/${prototypeData.integrations.length} connecteurs disponibles ·
+    niveau agent maximum ${escapeHtml(maxLevelForPlan(plan).name)}.
+  `;
+
+  document.querySelectorAll('[data-plan-id]').forEach((button) => {
+    button.addEventListener('click', () => {
+      selectedPlanId = button.dataset.planId;
+      applyPlanConstraints();
+      renderPrototype();
+    });
+  });
+}
+
+function renderPromptPacks() {
+  renderList('prompt-packs', prototypeData.promptPacks, (pack) => {
+    const unlocked = planAllows(pack.minPlan);
+    const requiredPlan = planById(pack.minPlan);
+
+    return `
+      <article class="prompt-card" data-unlocked="${unlocked}">
+        <div class="prompt-card__header">
+          <span class="pill${unlocked ? '' : ' warning'}">${unlocked ? 'Debloque' : `Plan ${escapeHtml(requiredPlan.name)}`}</span>
+          <small>${pack.promptCount} prompts</small>
+        </div>
+        <h3>${escapeHtml(pack.name)}</h3>
+        <p>${escapeHtml(pack.outcome)}</p>
+        ${unlocked
+          ? `<blockquote>${escapeHtml(pack.samplePrompt)}</blockquote>`
+          : '<blockquote class="locked">Prompt visible apres upgrade.</blockquote>'}
+      </article>
+    `;
+  });
+}
+
+function renderAgentLevels() {
+  const plan = selectedPlan();
+  const maxRank = maxLevelForPlan(plan).rank;
+
+  renderList('agent-level-selector', prototypeData.agentLevels, (level) => {
+    const allowed = level.rank <= maxRank;
+
+    return `
+      <button class="level-option" data-level-id="${level.id}" data-selected="${level.id === selectedAgentLevelId}" data-allowed="${allowed}" type="button" ${allowed ? '' : 'disabled'}>
+        <strong>${escapeHtml(level.name)}</strong>
+        <span>${escapeHtml(level.modelTier)} · x${level.costMultiplier.toLocaleString('fr-FR')}</span>
+        <small>${allowed ? escapeHtml(level.description) : `Disponible avec le plan superieur`}</small>
+      </button>
+    `;
+  });
+
+  document.querySelectorAll('[data-level-id]').forEach((button) => {
+    button.addEventListener('click', () => {
+      if (button.dataset.allowed !== 'true') {
+        return;
+      }
+
+      selectedAgentLevelId = button.dataset.levelId;
+      renderPrototype();
+    });
+  });
+}
+
 function renderMetrics() {
   const budget = computeBudget();
+  const plan = selectedPlan();
   const metrics = [
+    { label: 'Plan', value: `${plan.name}` },
     { label: 'Budget IA', value: formatEuro(budget.activeBudget) },
-    { label: 'Validations', value: budget.approvals },
-    { label: 'Artefacts', value: budget.artifactCount }
+    { label: 'Validations', value: budget.approvals }
   ];
 
   renderList('mission-metrics', metrics, (metric) => `
@@ -276,6 +411,9 @@ function renderMetrics() {
 }
 
 function renderPrototype() {
+  renderPricing();
+  renderPromptPacks();
+  renderAgentLevels();
   renderIntake();
   renderDemoAccount();
   renderTestCampaign();
@@ -289,16 +427,22 @@ function renderPrototype() {
     </article>
   `);
 
-  renderList('agents-grid', prototypeData.agents, (agent) => `
+  const level = selectedLevel();
+
+  renderList('agents-grid', prototypeData.agents, (agent) => {
+    const adjustedCost = agent.unitCost * level.costMultiplier;
+
+    return `
     <article class="agent-card">
       <h3>${agent.name}</h3>
       <p>${agent.role}</p>
       <div class="agent-meta">
-        <span class="pill">${agent.modelTier}</span>
-        <span class="cost">${agent.unitCost.toFixed(2).replace('.', ',')} EUR</span>
+        <span class="pill">${escapeHtml(level.name)} · ${escapeHtml(level.modelTier)}</span>
+        <span class="cost">${adjustedCost.toFixed(2).replace('.', ',')} EUR</span>
       </div>
     </article>
-  `);
+  `;
+  });
 
   renderList('data-hub-list', prototypeData.dataHubItems, (item) => `<li>${item}</li>`);
 
@@ -320,25 +464,40 @@ function renderPrototype() {
     </article>
   `);
 
-  renderList('modules-grid', prototypeData.modules, (module) => `
-    <button class="module-card" data-module-id="${module.id}" data-enabled="${module.enabled}" type="button">
+  const plan = selectedPlan();
+
+  renderList('modules-grid', prototypeData.modules, (module) => {
+    const inPlan = plan.moduleIds.includes(module.id);
+    const statusLabel = !inPlan ? 'Hors plan' : module.enabled ? 'Actif' : 'Inactif';
+
+    return `
+    <button class="module-card" data-module-id="${module.id}" data-enabled="${module.enabled}" data-in-plan="${inPlan}" type="button" ${inPlan ? '' : 'disabled'}>
       <h3>${module.name}</h3>
       <p>${module.policy}</p>
       <div class="module-meta">
-        <span class="pill">${module.enabled ? 'Actif' : 'Inactif'}</span>
+        <span class="pill${inPlan ? '' : ' warning'}">${statusLabel}</span>
         <span class="cost">${formatEuro(module.monthlyBudget)}</span>
       </div>
     </button>
-  `);
+  `;
+  });
 
-  renderList('integration-catalog', prototypeData.integrations, (integration) => `
-    <article class="integration-card">
-      <span class="pill">${escapeHtml(integration.category)}</span>
+  renderList('integration-catalog', prototypeData.integrations, (integration) => {
+    const unlocked = planAllows(integration.minPlan);
+    const requiredPlan = planById(integration.minPlan);
+
+    return `
+    <article class="integration-card" data-unlocked="${unlocked}">
+      <div class="integration-card__header">
+        <span class="pill">${escapeHtml(integration.category)}</span>
+        <span class="pill${unlocked ? '' : ' warning'}">${unlocked ? 'Inclus' : `Plan ${escapeHtml(requiredPlan.name)}`}</span>
+      </div>
       <h3>${escapeHtml(integration.name)}</h3>
       <p>${escapeHtml(integration.use)}</p>
       <small>${escapeHtml(integration.connection)} · ${escapeHtml(integration.costProfile)}</small>
     </article>
-  `);
+  `;
+  });
 
   const normalizedArtifactFilter = artifactFilter.trim().toLowerCase();
   const filteredArtifacts = prototypeData.artifacts.filter((artifact) => {
@@ -387,6 +546,10 @@ function renderPrototype() {
 
   document.querySelectorAll('[data-module-id]').forEach((button) => {
     button.addEventListener('click', () => {
+      if (button.dataset.inPlan !== 'true') {
+        return;
+      }
+
       const module = moduleById(button.dataset.moduleId);
       module.enabled = !module.enabled;
       renderPrototype();
@@ -413,6 +576,9 @@ async function start() {
     }
 
     prototypeData = clone(await response.json());
+    selectedPlanId = prototypeData.demoCustomer.planId || prototypeData.pricingPlans[0].id;
+    selectedAgentLevelId = maxLevelForPlan(selectedPlan()).id;
+    applyPlanConstraints();
     document.getElementById('mission-title').textContent = prototypeData.mission.title;
     document.getElementById('mission-summary').textContent = prototypeData.mission.summary;
     renderPrototype();

@@ -41,8 +41,13 @@ function searchableRecords() {
     id: integration.id,
     text: `${integration.name} ${integration.category} ${integration.use} ${integration.connection} ${integration.costProfile}`
   }));
+  const promptPacks = data.promptPacks.map((pack) => ({
+    collection: 'promptPacks',
+    id: pack.id,
+    text: `${pack.name} ${(pack.keywords || []).join(' ')} ${pack.outcome}`
+  }));
 
-  return modules.concat(agents, decisions, artifacts, integrations);
+  return modules.concat(agents, decisions, artifacts, integrations, promptPacks);
 }
 
 function queryRecords(query) {
@@ -72,6 +77,10 @@ const requiredTargets = [
   'journey-map',
   'modules-grid',
   'integration-catalog',
+  'pricing-grid',
+  'plan-summary',
+  'prompt-packs',
+  'agent-level-selector',
   'artifact-filter',
   'artifact-table'
 ];
@@ -84,6 +93,33 @@ assert(data.testCampaign.customerId === data.demoCustomer.id, 'Campaign must ref
 assert(data.testCampaign.actions.length >= 4, 'Test campaign must include enough platform actions.');
 assert(data.testCampaign.humanGates.length >= 2, 'Test campaign must include human approval gates.');
 assert(data.integrations.length >= 8, 'Integration catalog should cover multiple external solution types.');
+assert(data.pricingPlans.length >= 3, 'Monetization requires at least three pricing plans.');
+assert(data.agentLevels.length >= 3, 'Agent levels must range from beginner to expert.');
+assert(data.promptPacks.length >= 4, 'Prompt library must contain several packs.');
+
+const sortedPlans = [...data.pricingPlans].sort((left, right) => left.rank - right.rank);
+for (let index = 1; index < sortedPlans.length; index += 1) {
+  assert(
+    sortedPlans[index].monthlyPrice > sortedPlans[index - 1].monthlyPrice,
+    'Plan prices must increase with rank.'
+  );
+  assert(
+    sortedPlans[index].aiCredits > sortedPlans[index - 1].aiCredits,
+    'Plan AI credits must increase with rank.'
+  );
+}
+
+const starterPlan = data.pricingPlans.find((plan) => plan.rank === 1);
+const starterUnlockedPacks = data.promptPacks.filter((pack) => {
+  const requiredPlan = data.pricingPlans.find((plan) => plan.id === pack.minPlan);
+  return requiredPlan.rank <= starterPlan.rank;
+});
+assert(starterUnlockedPacks.length >= 1, 'Starter plan must unlock at least one prompt pack.');
+
+const topPlan = sortedPlans[sortedPlans.length - 1];
+const expertLevel = data.agentLevels.find((level) => level.id === topPlan.maxAgentLevel);
+assert(expertLevel && expertLevel.rank === Math.max(...data.agentLevels.map((level) => level.rank)),
+  'Top plan must unlock the expert agent level.');
 
 for (const journey of data.journeys) {
   assert(journey.steps.length >= 3, `Journey ${journey.id} should have at least three steps.`);

@@ -11,6 +11,7 @@ const requiredFiles = [
   'docs/agentic-marketing-saas-architecture.md',
   'docs/data-hub-model.md',
   'docs/demo-campaign-scenario.md',
+  'docs/monetization-v1.md',
   'docs/runtime-contracts.md',
   'docs/project-agenda.md'
 ];
@@ -72,7 +73,7 @@ assert(
   'mission.defaultUsageRate must be a number between 0 and 1.'
 );
 
-for (const collectionName of ['workflow', 'journeys', 'intakeQuestions', 'queryExamples', 'agents', 'modules', 'dataHubItems', 'decisions', 'modelRouting', 'artifacts', 'integrations', 'agenda']) {
+for (const collectionName of ['workflow', 'journeys', 'intakeQuestions', 'queryExamples', 'agents', 'modules', 'dataHubItems', 'decisions', 'modelRouting', 'artifacts', 'integrations', 'pricingPlans', 'agentLevels', 'promptPacks', 'agenda']) {
   assert(Array.isArray(prototypeData[collectionName]), `${collectionName} must be an array.`);
   assert(prototypeData[collectionName].length > 0, `${collectionName} must not be empty.`);
 }
@@ -84,6 +85,9 @@ assertUniqueIds(prototypeData.artifacts, 'artifacts');
 assertUniqueIds(prototypeData.journeys, 'journeys');
 assertUniqueIds(prototypeData.intakeQuestions, 'intakeQuestions');
 assertUniqueIds(prototypeData.integrations, 'integrations');
+const planIds = assertUniqueIds(prototypeData.pricingPlans, 'pricingPlans');
+const levelIds = assertUniqueIds(prototypeData.agentLevels, 'agentLevels');
+assertUniqueIds(prototypeData.promptPacks, 'promptPacks');
 
 assertNonEmptyString(prototypeData.demoCustomer.companyName, 'demoCustomer.companyName');
 assertNonEmptyString(prototypeData.demoCustomer.objective, 'demoCustomer.objective');
@@ -121,7 +125,41 @@ for (const integration of prototypeData.integrations) {
   assertNonEmptyString(integration.category, `integrations.${integration.id}.category`);
   assertNonEmptyString(integration.name, `integrations.${integration.id}.name`);
   assertNonEmptyString(integration.connection, `integrations.${integration.id}.connection`);
+  assert(planIds.has(integration.minPlan), `integrations.${integration.id}.minPlan references unknown plan ${integration.minPlan}.`);
 }
+
+for (const plan of prototypeData.pricingPlans) {
+  assert(typeof plan.monthlyPrice === 'number' && plan.monthlyPrice > 0, `pricingPlans.${plan.id}.monthlyPrice must be positive.`);
+  assert(Number.isInteger(plan.rank) && plan.rank > 0, `pricingPlans.${plan.id}.rank must be a positive integer.`);
+  assert(typeof plan.aiCredits === 'number' && plan.aiCredits > 0, `pricingPlans.${plan.id}.aiCredits must be positive.`);
+  assert(levelIds.has(plan.maxAgentLevel), `pricingPlans.${plan.id}.maxAgentLevel references unknown level ${plan.maxAgentLevel}.`);
+  assert(Array.isArray(plan.moduleIds) && plan.moduleIds.length > 0, `pricingPlans.${plan.id}.moduleIds must not be empty.`);
+
+  for (const moduleId of plan.moduleIds) {
+    assert(moduleIds.has(moduleId), `pricingPlans.${plan.id}.moduleIds references unknown module ${moduleId}.`);
+  }
+}
+
+const planRanks = prototypeData.pricingPlans.map((plan) => plan.rank);
+assert(new Set(planRanks).size === planRanks.length, 'pricingPlans ranks must be unique.');
+
+for (const level of prototypeData.agentLevels) {
+  assertNonEmptyString(level.name, `agentLevels.${level.id}.name`);
+  assertNonEmptyString(level.modelTier, `agentLevels.${level.id}.modelTier`);
+  assert(typeof level.costMultiplier === 'number' && level.costMultiplier > 0, `agentLevels.${level.id}.costMultiplier must be positive.`);
+  assert(Number.isInteger(level.rank) && level.rank > 0, `agentLevels.${level.id}.rank must be a positive integer.`);
+}
+
+for (const pack of prototypeData.promptPacks) {
+  assertNonEmptyString(pack.name, `promptPacks.${pack.id}.name`);
+  assertNonEmptyString(pack.samplePrompt, `promptPacks.${pack.id}.samplePrompt`);
+  assertNonEmptyString(pack.outcome, `promptPacks.${pack.id}.outcome`);
+  assert(Number.isInteger(pack.promptCount) && pack.promptCount > 0, `promptPacks.${pack.id}.promptCount must be positive.`);
+  assert(moduleIds.has(pack.moduleId), `promptPacks.${pack.id}.moduleId references unknown module ${pack.moduleId}.`);
+  assert(planIds.has(pack.minPlan), `promptPacks.${pack.id}.minPlan references unknown plan ${pack.minPlan}.`);
+}
+
+assert(planIds.has(prototypeData.demoCustomer.planId), 'demoCustomer.planId must reference a pricing plan.');
 
 for (const question of prototypeData.intakeQuestions) {
   assertNonEmptyString(question.label, `intakeQuestions.${question.id}.label`);

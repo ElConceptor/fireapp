@@ -20,6 +20,7 @@ sont decrits dans:
 - [docs/data-hub-model.md](docs/data-hub-model.md)
 - [docs/demo-campaign-scenario.md](docs/demo-campaign-scenario.md)
 - [docs/journey-ux-review.md](docs/journey-ux-review.md)
+- [docs/monetization-v1.md](docs/monetization-v1.md)
 - [docs/runtime-contracts.md](docs/runtime-contracts.md)
 - [docs/project-agenda.md](docs/project-agenda.md)
 
