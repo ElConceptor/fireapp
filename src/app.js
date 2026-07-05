@@ -9,6 +9,9 @@ let selectedPlanId = 'growth';
 let selectedAgentLevelId = 'confirme';
 let selectedChatAgentId = 'orchestrator';
 let chatMessages = [];
+let missionState = 'idle';
+let missionTaskStatuses = {};
+let auditEvents = [];
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -244,6 +247,14 @@ function renderReadiness() {
     : ['Produit compris', 'Cible identifiee', 'Objectif exploitable'];
 
   renderList('readiness-list', items, (item) => `<li>${escapeHtml(item)}</li>`);
+
+  const launchButton = document.getElementById('launch-mission');
+  launchButton.disabled = readiness.score < 100 || missionState === 'running';
+  launchButton.textContent = missionState === 'running'
+    ? 'Mission en cours...'
+    : missionState === 'done'
+      ? 'Relancer la mission'
+      : 'Lancer la mission';
 }
 
 function renderDemoAccount() {
@@ -352,6 +363,10 @@ function renderPricing() {
 
   document.querySelectorAll('[data-plan-id]').forEach((button) => {
     button.addEventListener('click', () => {
+      if (selectedPlanId !== button.dataset.planId) {
+        recordAudit(`Plan change vers ${planById(button.dataset.planId).name}.`);
+      }
+
       selectedPlanId = button.dataset.planId;
       applyPlanConstraints();
       renderPrototype();
@@ -405,6 +420,120 @@ function renderAgentLevels() {
       selectedAgentLevelId = button.dataset.levelId;
       renderPrototype();
     });
+  });
+}
+
+function recordAudit(action) {
+  auditEvents.unshift({
+    time: new Date().toLocaleTimeString('fr-FR'),
+    action
+  });
+  renderAuditLog();
+}
+
+function renderAuditLog() {
+  const target = document.getElementById('audit-log');
+
+  if (!auditEvents.length) {
+    target.innerHTML = '<p class="chat-hint">Chaque action sensible sera tracee ici.</p>';
+    return;
+  }
+
+  target.innerHTML = auditEvents.slice(0, 12).map((event) => `
+    <div class="audit-event">
+      <span>${escapeHtml(event.time)}</span>
+      <p>${escapeHtml(event.action)}</p>
+    </div>
+  `).join('');
+}
+
+function agentById(agentId) {
+  return prototypeData.agents.find((agent) => agent.id === agentId);
+}
+
+function renderMissionTasks() {
+  const target = document.getElementById('mission-tasks');
+
+  if (missionState === 'idle') {
+    target.innerHTML = '<p class="chat-hint">Completer l intake puis lancer la mission.</p>';
+    return;
+  }
+
+  target.innerHTML = prototypeData.missionPlan.map((task) => {
+    const agent = agentById(task.agentId);
+    const status = missionTaskStatuses[task.id] || 'pending';
+    const statusLabel = status === 'done' ? 'Termine' : status === 'running' ? 'En cours...' : 'En attente';
+
+    return `
+      <div class="mission-task" data-status="${status}">
+        <span class="agent-avatar" aria-hidden="true">${agent.avatar}</span>
+        <div>
+          <strong>${escapeHtml(task.title)}</strong>
+          <p>${escapeHtml(agent.name)} · ${escapeHtml(task.output)}</p>
+        </div>
+        <span class="pill${status === 'done' ? '' : ' warning'}">${statusLabel}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderMissionBrief() {
+  const target = document.getElementById('mission-brief');
+
+  if (missionState !== 'done') {
+    target.className = 'empty-state';
+    target.textContent = missionState === 'running'
+      ? 'Les agents travaillent, le brief arrive...'
+      : 'Le brief GTM apparaitra ici apres la mission.';
+    return;
+  }
+
+  const product = intakeAnswers.product || 'votre offre';
+  const audience = intakeAnswers.audience || 'votre cible';
+  const objective = intakeAnswers.objective || 'votre objectif';
+  const constraints = intakeAnswers.constraints || 'aucune contrainte declaree';
+
+  target.className = 'brief-card';
+  target.innerHTML = `
+    <span class="pill">Executive summary · Pyramide de Minto</span>
+    <h3>Brief GTM genere par l equipe IA</h3>
+    <p><strong>Conclusion:</strong> ${escapeHtml(product)} peut atteindre "${escapeHtml(objective)}" en concentrant l effort sur ${escapeHtml(audience)}.</p>
+    <ol>
+      <li><strong>Cible prioritaire:</strong> ${escapeHtml(audience)}, adressee par messages orientes benefices avec preuves.</li>
+      <li><strong>Plan d action:</strong> sequence multicanale 30 jours (LinkedIn, email, landing page) avec tests A/B.</li>
+      <li><strong>Contraintes respectees:</strong> ${escapeHtml(constraints)}; toute depense et publication passe en validation humaine.</li>
+    </ol>
+    <p><strong>Decision demandee:</strong> valider ce brief pour debloquer la preparation de campagne.</p>
+  `;
+}
+
+function runMission() {
+  if (missionState === 'running') {
+    return;
+  }
+
+  missionState = 'running';
+  missionTaskStatuses = {};
+  recordAudit('Mission lancee depuis l intake par le souscripteur.');
+  renderMissionTasks();
+  renderMissionBrief();
+
+  prototypeData.missionPlan.forEach((task, index) => {
+    setTimeout(() => {
+      missionTaskStatuses[task.id] = 'running';
+      renderMissionTasks();
+    }, index * 900);
+
+    setTimeout(() => {
+      missionTaskStatuses[task.id] = 'done';
+      renderMissionTasks();
+
+      if (index === prototypeData.missionPlan.length - 1) {
+        missionState = 'done';
+        recordAudit('Brief GTM genere et soumis a validation humaine.');
+        renderMissionBrief();
+      }
+    }, index * 900 + 750);
   });
 }
 
@@ -582,6 +711,7 @@ function renderAutonomyMatrix() {
     button.addEventListener('click', () => {
       const module = moduleById(button.dataset.autonomyModule);
       module.autonomy = button.dataset.autonomyLevel;
+      recordAudit(`Autonomie de ${module.name} reglee sur ${autonomyById(module.autonomy).name}.`);
       renderPrototype();
     });
   });
@@ -647,6 +777,9 @@ function renderPrototype() {
   renderAutonomyMatrix();
   renderSecurity();
   renderIntake();
+  renderMissionTasks();
+  renderMissionBrief();
+  renderAuditLog();
   renderDemoAccount();
   renderTestCampaign();
   renderMetrics();
@@ -684,15 +817,43 @@ function renderPrototype() {
 
   renderList('data-hub-list', prototypeData.dataHubItems, (item) => `<li>${escapeHtml(item)}</li>`);
 
-  renderList('decision-list', prototypeData.decisions, (decision) => `
+  renderList('decision-list', prototypeData.decisions, (decision) => {
+    const resolved = decision.status === 'Approuve' || decision.status === 'Rejete';
+
+    return `
     <article class="decision-item">
       <div>
         <h3>${escapeHtml(decision.title)}</h3>
         <p>${escapeHtml(decision.owner)} · Risque ${escapeHtml(decision.risk)}</p>
       </div>
-      <span class="pill warning">${escapeHtml(decision.status)}</span>
+      <div class="decision-actions">
+        <span class="pill${decision.status === 'Approuve' ? '' : ' warning'}">${escapeHtml(decision.status)}</span>
+        ${resolved ? '' : `
+          <button type="button" data-decision-approve="${decision.id}">Approuver</button>
+          <button type="button" data-decision-reject="${decision.id}">Rejeter</button>
+        `}
+      </div>
     </article>
-  `);
+  `;
+  });
+
+  document.querySelectorAll('[data-decision-approve]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const decision = prototypeData.decisions.find((item) => item.id === button.dataset.decisionApprove);
+      decision.status = 'Approuve';
+      recordAudit(`Decision approuvee: ${decision.title} (${decision.owner}).`);
+      renderPrototype();
+    });
+  });
+
+  document.querySelectorAll('[data-decision-reject]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const decision = prototypeData.decisions.find((item) => item.id === button.dataset.decisionReject);
+      decision.status = 'Rejete';
+      recordAudit(`Decision rejetee: ${decision.title} (${decision.owner}).`);
+      renderPrototype();
+    });
+  });
 
   renderList('model-routing', prototypeData.modelRouting, (route) => `
     <article class="routing-item">
@@ -790,6 +951,7 @@ function renderPrototype() {
 
       const module = moduleById(button.dataset.moduleId);
       module.enabled = !module.enabled;
+      recordAudit(`Module ${module.name} ${module.enabled ? 'active' : 'desactive'}.`);
       renderPrototype();
     });
   });
@@ -834,9 +996,32 @@ async function start() {
     });
     document.getElementById('create-demo-account').addEventListener('click', () => {
       demoAccountCreated = true;
+      recordAudit('Compte demo Acme Sales Academy cree.');
       renderPrototype();
       document.getElementById('prepare-campaign').focus();
     });
+    document.getElementById('launch-mission').addEventListener('click', runMission);
+
+    const voiceButton = document.getElementById('voice-input');
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      voiceButton.disabled = true;
+      voiceButton.title = 'Reconnaissance vocale non supportee par ce navigateur';
+    } else {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'fr-FR';
+      recognition.interimResults = false;
+
+      recognition.addEventListener('result', (event) => {
+        document.getElementById('chat-input').value = event.results[0][0].transcript;
+        sendChatMessage();
+      });
+
+      voiceButton.addEventListener('click', () => {
+        recognition.start();
+      });
+    }
     document.getElementById('chat-send').addEventListener('click', sendChatMessage);
     document.getElementById('chat-input').addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
@@ -851,6 +1036,7 @@ async function start() {
       }
 
       campaignPrepared = true;
+      recordAudit('Campagne test preparee par les agents; validations requises avant execution.');
       renderPrototype();
     });
   } catch (error) {

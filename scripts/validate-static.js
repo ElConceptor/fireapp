@@ -128,6 +128,14 @@ for (const agent of prototypeData.agents) {
 }
 
 assertUniqueIds(prototypeData.reportTemplates, 'reportTemplates');
+const agentIds = new Set(prototypeData.agents.map((agent) => agent.id));
+assertUniqueIds(prototypeData.missionPlan, 'missionPlan');
+
+for (const task of prototypeData.missionPlan) {
+  assertNonEmptyString(task.title, `missionPlan.${task.id}.title`);
+  assertNonEmptyString(task.output, `missionPlan.${task.id}.output`);
+  assert(agentIds.has(task.agentId), `missionPlan.${task.id}.agentId references unknown agent ${task.agentId}.`);
+}
 
 for (const report of prototypeData.reportTemplates) {
   assertNonEmptyString(report.framework, `reportTemplates.${report.id}.framework`);

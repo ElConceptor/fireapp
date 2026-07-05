@@ -176,6 +176,38 @@
       "Registre des validations"
     ]
   },
+  "missionPlan": [
+    {
+      "id": "task-collect",
+      "agentId": "product-agent",
+      "title": "Analyser le brief et les documents produit",
+      "output": "Proposition de valeur formalisee"
+    },
+    {
+      "id": "task-personas",
+      "agentId": "product-agent",
+      "title": "Construire les personas et objections",
+      "output": "3 personas avec objections traitees"
+    },
+    {
+      "id": "task-market",
+      "agentId": "market-agent",
+      "title": "Dimensionner le marche et cartographier les concurrents",
+      "output": "TAM/SAM/SOM et matrice concurrentielle"
+    },
+    {
+      "id": "task-campaign",
+      "agentId": "campaign-agent",
+      "title": "Construire le plan de campagne multicanal",
+      "output": "Plan 30 jours avec budget par canal"
+    },
+    {
+      "id": "task-consolidate",
+      "agentId": "orchestrator",
+      "title": "Consolider le brief GTM et demander validation",
+      "output": "Executive summary pret pour decision"
+    }
+  ],
   "workflow": [
     "Comprendre le produit ou service",
     "Demander les donnees manquantes",

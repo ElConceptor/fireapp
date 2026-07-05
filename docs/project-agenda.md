@@ -26,6 +26,11 @@ d action, avec validation humaine et suivi strict des couts.
 - Rapports consulting (Minto, TAM/SAM/SOM, Porter, SWOT, business case) et
   chat humain-agents avec avatars et vocal dans
   `docs/consulting-reports-and-chat.md`.
+- Chaine operationnelle en place dans le prototype: intake -> lancement de
+  mission -> taches agents en sequence -> brief GTM genere depuis les reponses.
+- Decisions humaines actionnables (approuver/rejeter) avec journal d audit
+  permanent qui trace plans, modules, autonomie, missions et campagnes.
+- Entree vocale (speech-to-text) ajoutee au chat agents.
 - Scripts projet:
   - `npm run lint`: valide la base propre;
   - `npm run build`: copie le prototype dans `dist/`;

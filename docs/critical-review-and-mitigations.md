@@ -16,12 +16,12 @@ tout gating est cote client et il n y a ni auth ni isolation tenant.
 
 | # | Manque | Severite | Mitigation | Statut |
 | --- | --- | --- | --- | --- |
-| 1 | Aucune execution agentique reelle | Critique | Orchestrateur minimal qui produit brief + plan depuis l intake | Backlog MVP |
+| 1 | Aucune execution agentique reelle | Critique | Orchestrateur minimal qui produit brief + plan depuis l intake | Chaine simulee en place: intake -> mission -> taches -> brief genere; orchestrateur LLM reel au MVP backend |
 | 2 | Credits IA affiches mais jamais consommes | Critique | Ledger ai_usage_events + jauge de consommation | Jauge credits ajoutee au prototype; ledger backend au MVP |
-| 3 | Decisions humaines en lecture seule | Critique | Actions approve/reject avec etats et audit | Backlog MVP |
+| 3 | Decisions humaines en lecture seule | Critique | Actions approve/reject avec etats et audit | Fait dans le prototype avec journal d audit |
 | 4 | Integrations vitrines sans connexion | Critique | Demarrer avec Drive + Brevo + GA4 reels | Backlog MVP |
 | 5 | Pas d outils operationnels executables | Critique | Catalogue d outils gouvernes pilotes par la team IA | Catalogue ajoute (canon mail, social, analytics, credits, landing, enquetes) |
-| 6 | Intake sans issue apres readiness 100% | Majeur | CTA "Lancer la mission" reliant intake -> mission -> taches | Backlog MVP |
+| 6 | Intake sans issue apres readiness 100% | Majeur | CTA "Lancer la mission" reliant intake -> mission -> taches | Fait dans le prototype |
 | 7 | Artefacts sans contenu ouvrable | Majeur | Vue detail artefact avec versions | Backlog |
 | 8 | Ecart doc (8 modules) vs prototype (4) | Majeur | Aligner le perimetre V1 | Backlog |
 | 9 | Pas de controle d autonomie par module | Majeur | Matrice module x autonomie ajustable | Ajoute au prototype |
@@ -43,7 +43,7 @@ tout gating est cote client et il n y a ni auth ni isolation tenant.
 | 8 | XSS: innerHTML sans echappement systematique | Majeur | escapeHtml partout + CSP | Corrige dans le prototype |
 | 9 | Serveur statique non durci | Majeur | Bind 127.0.0.1 en dev, headers securite, TLS/WAF en prod | Documente; a faire au deploiement |
 | 10 | Prompts proprietaires exposes dans le JSON | Majeur | Prompts complets cote serveur uniquement | Regle documentee; extraits seuls exposes |
-| 11 | Audit permanent absent | Majeur | Journal append-only + SIEM + alertes | Controle "Audit permanent" au registre |
+| 11 | Audit permanent absent | Majeur | Journal append-only + SIEM + alertes | Journal d audit visible dans le prototype; append-only + SIEM au MVP backend |
 | 12 | Rate limiting/quotas non appliques | Majeur | Token bucket par tenant + coupure credits | Jauge + alerte 80% dans le prototype; enforcement backend |
 | 13 | Supply chain MCP custom | Majeur | Allowlist connecteurs certifies + sandbox | Controle trace |
 | 14 | RGPD incomplet | Majeur | DPIA, DPA sous-traitants, effacement par tenant | Controle trace |

@@ -746,6 +746,127 @@ textarea:focus {
   cursor: not-allowed;
 }
 
+.mission-tasks {
+  display: grid;
+  gap: 10px;
+}
+
+.mission-task {
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  transition: opacity 200ms ease;
+}
+
+.mission-task[data-status="pending"] {
+  opacity: 0.55;
+}
+
+.mission-task[data-status="running"] {
+  border-color: rgba(23, 92, 211, 0.5);
+}
+
+.mission-task div {
+  flex: 1;
+}
+
+.mission-task p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 3px 0 0;
+}
+
+.brief-card {
+  background: #fff;
+  border: 1px solid rgba(23, 92, 211, 0.35);
+  border-radius: 22px;
+  padding: 22px;
+}
+
+.brief-card h3 {
+  margin: 12px 0;
+}
+
+.brief-card ol {
+  color: var(--muted);
+  padding-left: 20px;
+}
+
+.brief-card li {
+  margin: 8px 0;
+}
+
+.decision-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.decision-actions button {
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 7px 12px;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.decision-actions button[data-decision-approve]:hover {
+  border-color: var(--green);
+  color: #027a48;
+}
+
+.decision-actions button[data-decision-reject]:hover {
+  border-color: #f04438;
+  color: #b42318;
+}
+
+.audit-panel {
+  border-top: 1px solid var(--line);
+  margin-top: 20px;
+  padding-top: 18px;
+}
+
+.audit-log {
+  display: grid;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.audit-event {
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+}
+
+.audit-event span {
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.audit-event p {
+  font-size: 13px;
+  margin: 0;
+}
+
+.chat-row {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
 .security-list {
   display: grid;
   gap: 12px;

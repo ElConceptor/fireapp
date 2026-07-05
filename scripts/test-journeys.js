@@ -94,6 +94,11 @@ const requiredTargets = [
   'agent-tools-grid',
   'qa-agents-grid',
   'report-templates',
+  'launch-mission',
+  'mission-tasks',
+  'mission-brief',
+  'audit-log',
+  'voice-input',
   'agent-picker',
   'chat-log',
   'chat-input',
@@ -163,6 +168,11 @@ for (const requiredReport of ['report-executive-summary', 'report-market-sizing'
 for (const agent of data.agents) {
   assert(agent.avatar && agent.greeting && agent.chatReply, `Agent ${agent.id} must support chat with avatar, greeting and reply.`);
 }
+
+assert(data.missionPlan.length >= 4, 'Mission plan needs enough agent tasks to demonstrate execution.');
+assert(data.missionPlan.some((task) => task.agentId === 'orchestrator'), 'Mission plan must end with orchestrator consolidation.');
+const missionAgents = new Set(data.missionPlan.map((task) => task.agentId));
+assert(missionAgents.size >= 3, 'Mission plan must involve several different agents.');
 
 assert(data.securityControls.length >= 6, 'Security controls must cover isolation, auth, audit, injection, outbound and secrets.');
 assert(data.securityControls.some((control) => control.id === 'permanent-audit'), 'Permanent audit control is required.');

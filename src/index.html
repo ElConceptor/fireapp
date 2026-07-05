@@ -120,8 +120,9 @@
         </article>
         <article class="panel chat-panel">
           <div id="chat-log" class="chat-log" aria-live="polite"></div>
-          <div class="query-row">
+          <div class="query-row chat-row">
             <input id="chat-input" type="text" placeholder="Ex: dimensionne mon marche, prepare un SWOT...">
+            <button id="voice-input" class="button secondary" type="button" title="Parler a l agent">🎙</button>
             <button id="chat-send" class="button primary" type="button">Envoyer</button>
           </div>
         </article>
@@ -142,6 +143,21 @@
           <h2 id="readiness-score">0%</h2>
           <p id="readiness-summary">Renseigner les champs requis pour demarrer.</p>
           <ul id="readiness-list" class="check-list"></ul>
+          <button id="launch-mission" class="button primary" type="button" disabled>Lancer la mission</button>
+        </article>
+      </section>
+
+      <section id="mission-run" class="section split">
+        <article class="panel">
+          <p class="eyebrow">Execution de la mission</p>
+          <h2>Les agents travaillent en sequence tracee.</h2>
+          <div id="mission-tasks" class="mission-tasks">
+            <p class="chat-hint">Completer l intake puis lancer la mission.</p>
+          </div>
+        </article>
+        <article class="panel">
+          <p class="eyebrow">Livrable genere</p>
+          <div id="mission-brief" class="empty-state">Le brief GTM apparaitra ici apres la mission.</div>
         </article>
       </section>
 
@@ -319,6 +335,12 @@
         <article class="panel">
           <p class="eyebrow">Controles</p>
           <div id="security-controls" class="security-list"></div>
+          <div class="audit-panel">
+            <p class="eyebrow">Journal d audit permanent</p>
+            <div id="audit-log" class="audit-log">
+              <p class="chat-hint">Chaque action sensible sera tracee ici.</p>
+            </div>
+          </div>
         </article>
       </section>
 
