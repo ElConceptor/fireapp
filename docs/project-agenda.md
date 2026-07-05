@@ -20,6 +20,9 @@ d action, avec validation humaine et suivi strict des couts.
 - Scenario compte client et campagne test documente dans `docs/demo-campaign-scenario.md`.
 - Monetisation V1 (plans, niveaux d agents, prompt packs) documentee dans
   `docs/monetization-v1.md` et active dans le prototype.
+- Revue critique par reseau d agents et mitigations dans
+  `docs/critical-review-and-mitigations.md`; outils agents, autonomie par
+  module, reseau QA, registre securite et jauge credits ajoutes.
 - Scripts projet:
   - `npm run lint`: valide la base propre;
   - `npm run build`: copie le prototype dans `dist/`;

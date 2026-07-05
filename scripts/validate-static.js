@@ -10,6 +10,7 @@ const requiredFiles = [
   'src/data/prototype-data.json',
   'docs/agentic-marketing-saas-architecture.md',
   'docs/data-hub-model.md',
+  'docs/critical-review-and-mitigations.md',
   'docs/demo-campaign-scenario.md',
   'docs/monetization-v1.md',
   'docs/runtime-contracts.md',
@@ -73,7 +74,7 @@ assert(
   'mission.defaultUsageRate must be a number between 0 and 1.'
 );
 
-for (const collectionName of ['workflow', 'journeys', 'intakeQuestions', 'queryExamples', 'agents', 'modules', 'dataHubItems', 'decisions', 'modelRouting', 'artifacts', 'integrations', 'pricingPlans', 'agentLevels', 'promptPacks', 'agenda']) {
+for (const collectionName of ['workflow', 'journeys', 'intakeQuestions', 'queryExamples', 'agents', 'modules', 'dataHubItems', 'decisions', 'modelRouting', 'artifacts', 'integrations', 'pricingPlans', 'agentLevels', 'promptPacks', 'agentTools', 'qaAgents', 'autonomyLevels', 'securityControls', 'agenda']) {
   assert(Array.isArray(prototypeData[collectionName]), `${collectionName} must be an array.`);
   assert(prototypeData[collectionName].length > 0, `${collectionName} must not be empty.`);
 }
@@ -88,6 +89,10 @@ assertUniqueIds(prototypeData.integrations, 'integrations');
 const planIds = assertUniqueIds(prototypeData.pricingPlans, 'pricingPlans');
 const levelIds = assertUniqueIds(prototypeData.agentLevels, 'agentLevels');
 assertUniqueIds(prototypeData.promptPacks, 'promptPacks');
+assertUniqueIds(prototypeData.agentTools, 'agentTools');
+assertUniqueIds(prototypeData.qaAgents, 'qaAgents');
+const autonomyIds = assertUniqueIds(prototypeData.autonomyLevels, 'autonomyLevels');
+assertUniqueIds(prototypeData.securityControls, 'securityControls');
 
 assertNonEmptyString(prototypeData.demoCustomer.companyName, 'demoCustomer.companyName');
 assertNonEmptyString(prototypeData.demoCustomer.objective, 'demoCustomer.objective');
@@ -160,6 +165,27 @@ for (const pack of prototypeData.promptPacks) {
 }
 
 assert(planIds.has(prototypeData.demoCustomer.planId), 'demoCustomer.planId must reference a pricing plan.');
+
+for (const module of prototypeData.modules) {
+  assert(autonomyIds.has(module.autonomy), `modules.${module.id}.autonomy references unknown autonomy level ${module.autonomy}.`);
+}
+
+for (const tool of prototypeData.agentTools) {
+  assertNonEmptyString(tool.name, `agentTools.${tool.id}.name`);
+  assertNonEmptyString(tool.purpose, `agentTools.${tool.id}.purpose`);
+  assertNonEmptyString(tool.governance, `agentTools.${tool.id}.governance`);
+  assert(planIds.has(tool.minPlan), `agentTools.${tool.id}.minPlan references unknown plan ${tool.minPlan}.`);
+}
+
+for (const qaAgent of prototypeData.qaAgents) {
+  assertNonEmptyString(qaAgent.role, `qaAgents.${qaAgent.id}.role`);
+  assertNonEmptyString(qaAgent.trigger, `qaAgents.${qaAgent.id}.trigger`);
+}
+
+for (const control of prototypeData.securityControls) {
+  assertNonEmptyString(control.detail, `securityControls.${control.id}.detail`);
+  assertNonEmptyString(control.status, `securityControls.${control.id}.status`);
+}
 
 for (const question of prototypeData.intakeQuestions) {
   assertNonEmptyString(question.label, `intakeQuestions.${question.id}.label`);

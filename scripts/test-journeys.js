@@ -46,8 +46,13 @@ function searchableRecords() {
     id: pack.id,
     text: `${pack.name} ${(pack.keywords || []).join(' ')} ${pack.outcome}`
   }));
+  const agentTools = data.agentTools.map((tool) => ({
+    collection: 'agentTools',
+    id: tool.id,
+    text: `${tool.name} ${(tool.keywords || []).join(' ')} ${tool.purpose} ${tool.governance}`
+  }));
 
-  return modules.concat(agents, decisions, artifacts, integrations, promptPacks);
+  return modules.concat(agents, decisions, artifacts, integrations, promptPacks, agentTools);
 }
 
 function queryRecords(query) {
@@ -81,6 +86,11 @@ const requiredTargets = [
   'plan-summary',
   'prompt-packs',
   'agent-level-selector',
+  'agent-tools-grid',
+  'qa-agents-grid',
+  'autonomy-matrix',
+  'security-controls',
+  'credit-used-bar',
   'artifact-filter',
   'artifact-table'
 ];
@@ -120,6 +130,23 @@ const topPlan = sortedPlans[sortedPlans.length - 1];
 const expertLevel = data.agentLevels.find((level) => level.id === topPlan.maxAgentLevel);
 assert(expertLevel && expertLevel.rank === Math.max(...data.agentLevels.map((level) => level.rank)),
   'Top plan must unlock the expert agent level.');
+
+assert(data.agentTools.length >= 6, 'Agent tools must cover mail, social, analytics, credits, landing and surveys.');
+for (const requiredTool of ['mail-cannon', 'social-publisher', 'tracking-analytics', 'credit-monitor', 'landing-builder', 'survey-builder']) {
+  assert(data.agentTools.some((tool) => tool.id === requiredTool), `Missing required agent tool: ${requiredTool}.`);
+}
+
+assert(data.qaAgents.length >= 3, 'QA network needs tester, optimizer and red team agents.');
+assert(data.qaAgents.some((agent) => agent.id === 'qa-redteam'), 'QA network must include a red team agent.');
+
+assert(data.autonomyLevels.length >= 3, 'Autonomy must range from manual to autonomous.');
+for (const module of data.modules) {
+  assert(data.autonomyLevels.some((level) => level.id === module.autonomy), `Module ${module.id} has invalid autonomy level.`);
+}
+
+assert(data.securityControls.length >= 6, 'Security controls must cover isolation, auth, audit, injection, outbound and secrets.');
+assert(data.securityControls.some((control) => control.id === 'permanent-audit'), 'Permanent audit control is required.');
+assert(data.securityControls.some((control) => control.id === 'tenant-isolation'), 'Tenant isolation control is required.');
 
 for (const journey of data.journeys) {
   assert(journey.steps.length >= 3, `Journey ${journey.id} should have at least three steps.`);

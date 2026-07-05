@@ -76,10 +76,17 @@ function applyPlanConstraints() {
   }
 }
 
+function autonomyById(autonomyId) {
+  return prototypeData.autonomyLevels.find((level) => level.id === autonomyId);
+}
+
 function computeBudget() {
   const activeBudget = activeModules().reduce((total, module) => total + module.monthlyBudget, 0);
   const usage = Math.round(activeBudget * prototypeData.mission.defaultUsageRate);
-  const approvals = activeModules().reduce((total, module) => total + module.approvals, 0);
+  const approvals = activeModules().reduce((total, module) => {
+    const autonomy = autonomyById(module.autonomy);
+    return total + module.approvals + (autonomy ? autonomy.approvalWeight : 0);
+  }, 0);
 
   return {
     activeBudget,
@@ -134,8 +141,14 @@ function searchableRecords() {
     title: pack.name,
     text: `${pack.name} ${(pack.keywords || []).join(' ')} ${pack.outcome}`
   }));
+  const toolRecords = prototypeData.agentTools.map((tool) => ({
+    id: tool.id,
+    type: 'Outil',
+    title: tool.name,
+    text: `${tool.name} ${(tool.keywords || []).join(' ')} ${tool.purpose} ${tool.governance}`
+  }));
 
-  return moduleRecords.concat(agentRecords, decisionRecords, artifactRecords, integrationRecords, promptPackRecords);
+  return moduleRecords.concat(agentRecords, decisionRecords, artifactRecords, integrationRecords, promptPackRecords, toolRecords);
 }
 
 function runQuery(query) {
@@ -172,8 +185,8 @@ function renderQueryResults(results, query) {
 
   target.innerHTML = results.slice(0, 6).map((result) => `
     <article class="query-result">
-      <span class="pill">${result.type}</span>
-      <strong>${result.title}</strong>
+      <span class="pill">${escapeHtml(result.type)}</span>
+      <strong>${escapeHtml(result.title)}</strong>
     </article>
   `).join('');
 }
@@ -222,7 +235,7 @@ function renderReadiness() {
     ? readiness.missing.map((question) => `Manque: ${question.label}`)
     : ['Produit compris', 'Cible identifiee', 'Objectif exploitable'];
 
-  renderList('readiness-list', items, (item) => `<li>${item}</li>`);
+  renderList('readiness-list', items, (item) => `<li>${escapeHtml(item)}</li>`);
 }
 
 function renderDemoAccount() {
@@ -387,6 +400,99 @@ function renderAgentLevels() {
   });
 }
 
+function renderAgentTools() {
+  renderList('agent-tools-grid', prototypeData.agentTools, (tool) => {
+    const unlocked = planAllows(tool.minPlan);
+    const requiredPlan = planById(tool.minPlan);
+
+    return `
+      <article class="tool-card" data-unlocked="${unlocked}">
+        <div class="prompt-card__header">
+          <span class="pill${unlocked ? '' : ' warning'}">${unlocked ? 'Disponible' : `Plan ${escapeHtml(requiredPlan.name)}`}</span>
+        </div>
+        <h3>${escapeHtml(tool.name)}</h3>
+        <p>${escapeHtml(tool.purpose)}</p>
+        <small>${escapeHtml(tool.governance)}</small>
+      </article>
+    `;
+  });
+}
+
+function renderQaAgents() {
+  renderList('qa-agents-grid', prototypeData.qaAgents, (agent) => `
+    <article class="agent-card qa-card">
+      <h3>${escapeHtml(agent.name)}</h3>
+      <p>${escapeHtml(agent.role)}</p>
+      <div class="agent-meta">
+        <span class="pill">${escapeHtml(agent.trigger)}</span>
+      </div>
+    </article>
+  `);
+}
+
+function renderAutonomyMatrix() {
+  const plan = selectedPlan();
+
+  renderList('autonomy-matrix', prototypeData.modules, (module) => {
+    const inPlan = plan.moduleIds.includes(module.id);
+
+    return `
+      <article class="autonomy-row" data-in-plan="${inPlan}">
+        <div>
+          <strong>${escapeHtml(module.name)}</strong>
+          <p>${inPlan ? 'Niveau d autonomie des agents' : 'Module hors plan'}</p>
+        </div>
+        <div class="autonomy-options" role="group" aria-label="Autonomie ${escapeHtml(module.name)}">
+          ${prototypeData.autonomyLevels.map((level) => `
+            <button
+              type="button"
+              data-autonomy-module="${module.id}"
+              data-autonomy-level="${level.id}"
+              data-selected="${module.autonomy === level.id}"
+              title="${escapeHtml(level.description)}"
+              ${inPlan ? '' : 'disabled'}
+            >${escapeHtml(level.name)}</button>
+          `).join('')}
+        </div>
+      </article>
+    `;
+  });
+
+  document.querySelectorAll('[data-autonomy-module]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const module = moduleById(button.dataset.autonomyModule);
+      module.autonomy = button.dataset.autonomyLevel;
+      renderPrototype();
+    });
+  });
+}
+
+function renderSecurity() {
+  renderList('security-controls', prototypeData.securityControls, (control) => `
+    <article class="security-item">
+      <div>
+        <strong>${escapeHtml(control.name)}</strong>
+        <p>${escapeHtml(control.detail)}</p>
+      </div>
+      <span class="pill${control.status.startsWith('Exige') ? ' warning' : ''}">${escapeHtml(control.status)}</span>
+    </article>
+  `);
+
+  const plan = selectedPlan();
+  const level = selectedLevel();
+  const usageRatio = Math.min(prototypeData.mission.defaultUsageRate * level.costMultiplier, 1);
+  const creditsUsed = Math.round(plan.aiCredits * usageRatio);
+  const creditsRemaining = plan.aiCredits - creditsUsed;
+  const percentage = Math.round(usageRatio * 100);
+
+  document.getElementById('credit-used-label').textContent =
+    `${creditsUsed.toLocaleString('fr-FR')} credits consommes (niveau ${level.name})`;
+  document.getElementById('credit-used-bar').style.width = `${percentage}%`;
+  document.getElementById('credit-used-bar').dataset.alert = percentage >= 80;
+  document.getElementById('credit-remaining-label').textContent =
+    `${creditsRemaining.toLocaleString('fr-FR')} credits restants sur ${plan.aiCredits.toLocaleString('fr-FR')} (plan ${plan.name})${percentage >= 80 ? ' · Alerte seuil 80%' : ''}`;
+}
+
 function renderMetrics() {
   const budget = computeBudget();
   const plan = selectedPlan();
@@ -398,8 +504,8 @@ function renderMetrics() {
 
   renderList('mission-metrics', metrics, (metric) => `
     <div>
-      <dt>${metric.label}</dt>
-      <dd>${metric.value}</dd>
+      <dt>${escapeHtml(metric.label)}</dt>
+      <dd>${escapeHtml(String(metric.value))}</dd>
     </div>
   `);
 
@@ -414,6 +520,10 @@ function renderPrototype() {
   renderPricing();
   renderPromptPacks();
   renderAgentLevels();
+  renderAgentTools();
+  renderQaAgents();
+  renderAutonomyMatrix();
+  renderSecurity();
   renderIntake();
   renderDemoAccount();
   renderTestCampaign();
@@ -422,7 +532,7 @@ function renderPrototype() {
   renderList('workflow', prototypeData.workflow, (step, index) => `
     <article class="timeline-step">
       <span class="step-number">${index + 1}</span>
-      <h3>${step}</h3>
+      <h3>${escapeHtml(step)}</h3>
       <p>Etape suivie par l orchestrateur avec preuves, couts et validation si necessaire.</p>
     </article>
   `);
@@ -434,8 +544,8 @@ function renderPrototype() {
 
     return `
     <article class="agent-card">
-      <h3>${agent.name}</h3>
-      <p>${agent.role}</p>
+      <h3>${escapeHtml(agent.name)}</h3>
+      <p>${escapeHtml(agent.role)}</p>
       <div class="agent-meta">
         <span class="pill">${escapeHtml(level.name)} · ${escapeHtml(level.modelTier)}</span>
         <span class="cost">${adjustedCost.toFixed(2).replace('.', ',')} EUR</span>
@@ -444,23 +554,23 @@ function renderPrototype() {
   `;
   });
 
-  renderList('data-hub-list', prototypeData.dataHubItems, (item) => `<li>${item}</li>`);
+  renderList('data-hub-list', prototypeData.dataHubItems, (item) => `<li>${escapeHtml(item)}</li>`);
 
   renderList('decision-list', prototypeData.decisions, (decision) => `
     <article class="decision-item">
       <div>
-        <h3>${decision.title}</h3>
-        <p>${decision.owner} · Risque ${decision.risk}</p>
+        <h3>${escapeHtml(decision.title)}</h3>
+        <p>${escapeHtml(decision.owner)} · Risque ${escapeHtml(decision.risk)}</p>
       </div>
-      <span class="pill warning">${decision.status}</span>
+      <span class="pill warning">${escapeHtml(decision.status)}</span>
     </article>
   `);
 
   renderList('model-routing', prototypeData.modelRouting, (route) => `
     <article class="routing-item">
-      <strong>${route.tier}</strong>
-      <p>${route.use}</p>
-      <small>${route.guardrail}</small>
+      <strong>${escapeHtml(route.tier)}</strong>
+      <p>${escapeHtml(route.use)}</p>
+      <small>${escapeHtml(route.guardrail)}</small>
     </article>
   `);
 
@@ -472,8 +582,8 @@ function renderPrototype() {
 
     return `
     <button class="module-card" data-module-id="${module.id}" data-enabled="${module.enabled}" data-in-plan="${inPlan}" type="button" ${inPlan ? '' : 'disabled'}>
-      <h3>${module.name}</h3>
-      <p>${module.policy}</p>
+      <h3>${escapeHtml(module.name)}</h3>
+      <p>${escapeHtml(module.policy)}</p>
       <div class="module-meta">
         <span class="pill${inPlan ? '' : ' warning'}">${statusLabel}</span>
         <span class="cost">${formatEuro(module.monthlyBudget)}</span>
@@ -514,10 +624,10 @@ function renderPrototype() {
     return `
       <article class="artifact-row" data-enabled="${isActive}">
         <div>
-          <strong>${artifact.name}</strong>
-          <p>${artifact.type} · ${moduleName}</p>
+          <strong>${escapeHtml(artifact.name)}</strong>
+          <p>${escapeHtml(artifact.type)} · ${escapeHtml(moduleName)}</p>
         </div>
-        <span class="pill">${isActive ? artifact.status : 'Module inactif'}</span>
+        <span class="pill">${isActive ? escapeHtml(artifact.status) : 'Module inactif'}</span>
       </article>
     `;
   });
@@ -528,19 +638,19 @@ function renderPrototype() {
 
   renderList('journey-map', prototypeData.journeys, (journey) => `
     <article class="journey-card">
-      <strong>${journey.actor}</strong>
-      <h3>${journey.title}</h3>
+      <strong>${escapeHtml(journey.actor)}</strong>
+      <h3>${escapeHtml(journey.title)}</h3>
       <ol>
-        ${journey.steps.map((step) => `<li>${step}</li>`).join('')}
+        ${journey.steps.map((step) => `<li>${escapeHtml(step)}</li>`).join('')}
       </ol>
-      <p>${journey.successMetric}</p>
+      <p>${escapeHtml(journey.successMetric)}</p>
     </article>
   `);
 
   renderList('agenda-list', prototypeData.agenda, (item) => `
     <article class="agenda-item">
-      <strong>${item.status}</strong>
-      <p>${item.text}</p>
+      <strong>${escapeHtml(item.status)}</strong>
+      <p>${escapeHtml(item.text)}</p>
     </article>
   `);
 

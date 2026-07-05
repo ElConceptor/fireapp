@@ -290,6 +290,162 @@
       "query": "playbook vente",
       "expectedCollection": "promptPacks",
       "expectedId": "pack-sales-playbook"
+    },
+    {
+      "query": "canon mail",
+      "expectedCollection": "agentTools",
+      "expectedId": "mail-cannon"
+    },
+    {
+      "query": "landing page",
+      "expectedCollection": "agentTools",
+      "expectedId": "landing-builder"
+    }
+  ],
+  "agentTools": [
+    {
+      "id": "mail-cannon",
+      "name": "Canon a mail",
+      "purpose": "Envoyer des sequences email en masse via Brevo/Mailchimp.",
+      "governance": "Quota journalier par tenant, liste de suppression, validation avant envoi",
+      "minPlan": "starter",
+      "keywords": ["email", "canon", "sequence", "envoi"]
+    },
+    {
+      "id": "social-publisher",
+      "name": "Acces reseaux sociaux",
+      "purpose": "Publier et programmer posts LinkedIn, X et Meta.",
+      "governance": "Validation humaine obligatoire avant publication, historique complet",
+      "minPlan": "growth",
+      "keywords": ["social", "linkedin", "publication", "posts"]
+    },
+    {
+      "id": "tracking-analytics",
+      "name": "Analytique de suivi",
+      "purpose": "Suivre leads, conversions, CPL et performance par canal.",
+      "governance": "Lecture seule sur GA4/PostHog, agregation par mission",
+      "minPlan": "starter",
+      "keywords": ["analytics", "suivi", "conversion", "leads"]
+    },
+    {
+      "id": "credit-monitor",
+      "name": "Visualisation credits IA",
+      "purpose": "Voir la consommation de credits en temps reel par agent et module.",
+      "governance": "Alerte a 80%, coupure automatique a 100% sauf override admin",
+      "minPlan": "starter",
+      "keywords": ["credits", "consommation", "budget", "alerte"]
+    },
+    {
+      "id": "landing-builder",
+      "name": "Createur de landing pages",
+      "purpose": "Generer des landing pages de campagne avec formulaire de capture.",
+      "governance": "Publication apres validation, domaine du tenant, tracking integre",
+      "minPlan": "growth",
+      "keywords": ["landing", "page", "campagne", "formulaire"]
+    },
+    {
+      "id": "survey-builder",
+      "name": "Enquetes et sondages",
+      "purpose": "Creer des enquetes clients pour nourrir le Data Hub.",
+      "governance": "Consentement RGPD, anonymisation possible, resultats dans le Data Hub",
+      "minPlan": "growth",
+      "keywords": ["enquete", "sondage", "feedback", "survey"]
+    }
+  ],
+  "qaAgents": [
+    {
+      "id": "qa-tester",
+      "name": "Agent testeur",
+      "role": "Verifie chaque livrable: coherence, sources, format et objections non traitees.",
+      "trigger": "Apres chaque production d artefact"
+    },
+    {
+      "id": "qa-optimizer",
+      "name": "Agent optimiseur",
+      "role": "Compare les variantes, analyse les metriques et propose des ameliorations.",
+      "trigger": "Apres chaque cycle de mesure"
+    },
+    {
+      "id": "qa-redteam",
+      "name": "Agent red team",
+      "role": "Tente les injections de prompt et les abus de connecteurs pour durcir le systeme.",
+      "trigger": "Continu sur les entrees externes"
+    },
+    {
+      "id": "qa-cost-auditor",
+      "name": "Agent auditeur de couts",
+      "role": "Detecte les surcouts, propose des downgrades de modele et verifie les quotas.",
+      "trigger": "Quotidien et a chaque depassement de seuil"
+    }
+  ],
+  "autonomyLevels": [
+    {
+      "id": "manual",
+      "name": "Manuel",
+      "description": "Chaque action de l agent exige une validation du souscripteur.",
+      "approvalWeight": 2
+    },
+    {
+      "id": "assisted",
+      "name": "Assiste",
+      "description": "Les agents preparent et executent les taches internes; les actions externes exigent validation.",
+      "approvalWeight": 1
+    },
+    {
+      "id": "auto",
+      "name": "Autonome",
+      "description": "Les agents executent sous plafonds de cout; seules les actions critiques exigent validation.",
+      "approvalWeight": 0
+    }
+  ],
+  "securityControls": [
+    {
+      "id": "tenant-isolation",
+      "name": "Isolation multi-tenant",
+      "detail": "Row Level Security, filtre tenant_id systematique et tests IDOR automatises.",
+      "status": "Exige avant mise en production"
+    },
+    {
+      "id": "auth-mfa",
+      "name": "Authentification MFA",
+      "detail": "OIDC avec MFA, sessions courtes, RBAC applique cote API uniquement.",
+      "status": "Exige avant mise en production"
+    },
+    {
+      "id": "permanent-audit",
+      "name": "Audit permanent",
+      "detail": "Journal append-only, SIEM, alertes sur exports massifs et anomalies OAuth.",
+      "status": "Exige avant mise en production"
+    },
+    {
+      "id": "prompt-defense",
+      "name": "Defense anti-injection",
+      "detail": "Separation instructions/contenu externe, sanitisation documents, agent red team.",
+      "status": "Concu, a implementer"
+    },
+    {
+      "id": "outbound-guard",
+      "name": "Garde-fous sortants",
+      "detail": "Quotas email/ads par tenant, DLP sur exports, suspension automatique en cas d abus.",
+      "status": "Concu, a implementer"
+    },
+    {
+      "id": "secrets-vault",
+      "name": "Coffre de secrets",
+      "detail": "Tokens OAuth chiffres par tenant, rotation automatique, scopes minimaux.",
+      "status": "Concu, a implementer"
+    },
+    {
+      "id": "rate-limits",
+      "name": "Rate limiting et quotas",
+      "detail": "Token bucket par tenant/IP/route, coupure credits a 100%, facturation temps reel.",
+      "status": "Concu, a implementer"
+    },
+    {
+      "id": "gdpr",
+      "name": "Conformite RGPD",
+      "detail": "DPIA, DPA sous-traitants IA, effacement par tenant, redaction PII dans logs.",
+      "status": "Concu, a implementer"
     }
   ],
   "agents": [
@@ -330,7 +486,8 @@
       "policy": "Brief produit valide par le client",
       "keywords": ["produit", "brief", "positionnement", "offre"],
       "monthlyBudget": 120,
-      "approvals": 2
+      "approvals": 2,
+      "autonomy": "assisted"
     },
     {
       "id": "market",
@@ -339,7 +496,8 @@
       "policy": "Sources citees et hypotheses tracees",
       "keywords": ["marche", "concurrents", "segments", "recherche"],
       "monthlyBudget": 220,
-      "approvals": 1
+      "approvals": 1,
+      "autonomy": "auto"
     },
     {
       "id": "campaign",
@@ -348,7 +506,8 @@
       "policy": "Validation avant publication ou depense",
       "keywords": ["campagne", "budget", "media", "publication"],
       "monthlyBudget": 300,
-      "approvals": 3
+      "approvals": 3,
+      "autonomy": "assisted"
     },
     {
       "id": "mcp",
@@ -357,7 +516,8 @@
       "policy": "OAuth, scopes limites et audit par connecteur",
       "keywords": ["mcp", "crm", "integration", "connecteur"],
       "monthlyBudget": 180,
-      "approvals": 4
+      "approvals": 4,
+      "autonomy": "manual"
     }
   ],
   "dataHubItems": [

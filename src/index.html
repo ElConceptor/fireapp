@@ -30,7 +30,9 @@
         <a href="#agents">Agents</a>
         <a href="#governance">Gouvernance</a>
         <a href="#modules">Modules</a>
+        <a href="#tools">Outils</a>
         <a href="#integrations">Integrations</a>
+        <a href="#security">Securite</a>
         <a href="#data-hub">Data Hub</a>
         <a href="#agenda">Agenda</a>
       </nav>
@@ -226,6 +228,59 @@
           </p>
         </div>
         <div id="modules-grid" class="module-grid"></div>
+        <div class="section-title autonomy-title">
+          <p class="eyebrow">Autonomie des agents</p>
+          <h2>Le souscripteur ajuste le niveau de validation par module.</h2>
+          <p>
+            Manuel: tout est valide. Assiste: seules les actions externes sont
+            validees. Autonome: execution sous plafonds, validation sur actions
+            critiques uniquement.
+          </p>
+        </div>
+        <div id="autonomy-matrix" class="autonomy-matrix"></div>
+      </section>
+
+      <section id="tools" class="section">
+        <div class="section-title">
+          <p class="eyebrow">Outils pilotes par la team IA</p>
+          <h2>Les agents agissent avec des outils gouvernes.</h2>
+          <p>
+            Canon a mail, publication sociale, analytics, credits, landing pages
+            et enquetes: chaque outil a ses garde-fous et son plan minimum.
+          </p>
+        </div>
+        <div id="agent-tools-grid" class="tools-grid"></div>
+      </section>
+
+      <section id="qa-network" class="section">
+        <div class="section-title">
+          <p class="eyebrow">Reseau test & optimisation</p>
+          <h2>Des agents qui testent et optimisent en continu.</h2>
+        </div>
+        <div id="qa-agents-grid" class="card-grid"></div>
+      </section>
+
+      <section id="security" class="section split">
+        <article class="panel">
+          <p class="eyebrow">Securite tenant</p>
+          <h2>Le tenant est protege et sous audit permanent.</h2>
+          <p>
+            Chaque controle est trace: isolation, authentification, audit,
+            anti-injection, garde-fous sortants, secrets, quotas et RGPD.
+          </p>
+          <div class="credit-meter-panel">
+            <p class="eyebrow">Consommation credits IA</p>
+            <span id="credit-used-label"></span>
+            <div class="meter-track light">
+              <span id="credit-used-bar"></span>
+            </div>
+            <small id="credit-remaining-label"></small>
+          </div>
+        </article>
+        <article class="panel">
+          <p class="eyebrow">Controles</p>
+          <div id="security-controls" class="security-list"></div>
+        </article>
       </section>
 
       <section id="integrations" class="section">
