@@ -31,6 +31,9 @@ d action, avec validation humaine et suivi strict des couts.
 - Decisions humaines actionnables (approuver/rejeter) avec journal d audit
   permanent qui trace plans, modules, autonomie, missions et campagnes.
 - Entree vocale (speech-to-text) ajoutee au chat agents.
+- Phase 1 mise en prod livree dans `server/`: auth scrypt + sessions,
+  isolation multi-tenant SQLite, enforcement serveur des plans, protection
+  des prompts cote serveur et audit persistant (`docs/backend-phase1.md`).
 - Scripts projet:
   - `npm run lint`: valide la base propre;
   - `npm run build`: copie le prototype dans `dist/`;

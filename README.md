@@ -17,6 +17,7 @@ La vision produit, l architecture, la securite, les modules et la feuille de rou
 sont decrits dans:
 
 - [docs/agentic-marketing-saas-architecture.md](docs/agentic-marketing-saas-architecture.md)
+- [docs/backend-phase1.md](docs/backend-phase1.md)
 - [docs/consulting-reports-and-chat.md](docs/consulting-reports-and-chat.md)
 - [docs/critical-review-and-mitigations.md](docs/critical-review-and-mitigations.md)
 - [docs/data-hub-model.md](docs/data-hub-model.md)
@@ -31,6 +32,9 @@ sont decrits dans:
 ```bash
 npm install
 npm run lint
+npm run test:journeys
+npm run test:backend
 npm run build
-npm run serve
+npm run serve   # UI statique seule (port 4173)
+npm run start   # backend multi-tenant + UI (port 4180)
 ```

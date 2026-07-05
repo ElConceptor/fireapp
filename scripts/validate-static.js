@@ -9,6 +9,10 @@ const requiredFiles = [
   'src/app.js',
   'src/data/prototype-data.json',
   'docs/agentic-marketing-saas-architecture.md',
+  'docs/backend-phase1.md',
+  'server/api.js',
+  'server/auth.js',
+  'server/db.js',
   'docs/data-hub-model.md',
   'docs/consulting-reports-and-chat.md',
   'docs/critical-review-and-mitigations.md',
@@ -52,7 +56,7 @@ for (const file of requiredFiles) {
   assert(fs.existsSync(path.join(root, file)), `Missing required file: ${file}`);
 }
 
-for (const file of ['src/app.js', 'scripts/build-static.js', 'scripts/clean.js', 'scripts/serve-static.js', 'scripts/test-journeys.js']) {
+for (const file of ['src/app.js', 'scripts/build-static.js', 'scripts/clean.js', 'scripts/serve-static.js', 'scripts/test-journeys.js', 'scripts/test-backend.js', 'server/api.js', 'server/auth.js', 'server/db.js']) {
   execFileSync(process.execPath, ['--check', path.join(root, file)], {
     stdio: 'inherit'
   });

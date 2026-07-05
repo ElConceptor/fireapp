@@ -8,6 +8,8 @@
     "clean": "node scripts/clean.js",
     "lint": "node scripts/validate-static.js",
     "serve": "node scripts/serve-static.js",
+    "start": "node server/api.js",
+    "test:backend": "node scripts/test-backend.js",
     "test:journeys": "node scripts/test-journeys.js"
   }
 }
