@@ -7,6 +7,8 @@ let demoAccountCreated = false;
 let campaignPrepared = false;
 let selectedPlanId = 'growth';
 let selectedAgentLevelId = 'confirme';
+let selectedChatAgentId = 'orchestrator';
+let chatMessages = [];
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -147,8 +149,14 @@ function searchableRecords() {
     title: tool.name,
     text: `${tool.name} ${(tool.keywords || []).join(' ')} ${tool.purpose} ${tool.governance}`
   }));
+  const reportRecords = prototypeData.reportTemplates.map((report) => ({
+    id: report.id,
+    type: 'Rapport',
+    title: report.name,
+    text: `${report.name} ${report.framework} ${(report.keywords || []).join(' ')} ${report.description}`
+  }));
 
-  return moduleRecords.concat(agentRecords, decisionRecords, artifactRecords, integrationRecords, promptPackRecords, toolRecords);
+  return moduleRecords.concat(agentRecords, decisionRecords, artifactRecords, integrationRecords, promptPackRecords, toolRecords, reportRecords);
 }
 
 function runQuery(query) {
@@ -400,6 +408,118 @@ function renderAgentLevels() {
   });
 }
 
+function renderReportTemplates() {
+  renderList('report-templates', prototypeData.reportTemplates, (report) => {
+    const unlocked = planAllows(report.minPlan);
+    const requiredPlan = planById(report.minPlan);
+
+    return `
+      <article class="report-card" data-unlocked="${unlocked}">
+        <div class="prompt-card__header">
+          <span class="pill${unlocked ? '' : ' warning'}">${unlocked ? 'Disponible' : `Plan ${escapeHtml(requiredPlan.name)}`}</span>
+          <small>${escapeHtml(report.framework)}</small>
+        </div>
+        <h3>${escapeHtml(report.name)}</h3>
+        <p>${escapeHtml(report.description)}</p>
+        <ul>${report.sections.map((section) => `<li>${escapeHtml(section)}</li>`).join('')}</ul>
+      </article>
+    `;
+  });
+}
+
+function chatAgent() {
+  return prototypeData.agents.find((agent) => agent.id === selectedChatAgentId);
+}
+
+function speakReply(text) {
+  if (!document.getElementById('voice-toggle').checked) {
+    return;
+  }
+
+  if (typeof window.speechSynthesis === 'undefined') {
+    return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'fr-FR';
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+}
+
+function renderChat() {
+  renderList('agent-picker', prototypeData.agents, (agent) => `
+    <button class="agent-chip" data-chat-agent="${agent.id}" data-selected="${agent.id === selectedChatAgentId}" type="button">
+      <span class="agent-avatar" aria-hidden="true">${agent.avatar}</span>
+      <span>${escapeHtml(agent.name)}</span>
+    </button>
+  `);
+
+  document.querySelectorAll('[data-chat-agent]').forEach((button) => {
+    button.addEventListener('click', () => {
+      selectedChatAgentId = button.dataset.chatAgent;
+      chatMessages.push({ from: 'agent', agentId: selectedChatAgentId, text: chatAgent().greeting });
+      renderChat();
+    });
+  });
+
+  const log = document.getElementById('chat-log');
+
+  if (!chatMessages.length) {
+    log.innerHTML = '<p class="chat-hint">Choisissez un agent et posez votre premiere question.</p>';
+    return;
+  }
+
+  log.innerHTML = chatMessages.map((message) => {
+    if (message.from === 'user') {
+      return `<div class="chat-message user"><p>${escapeHtml(message.text)}</p></div>`;
+    }
+
+    const agent = prototypeData.agents.find((item) => item.id === message.agentId);
+
+    return `
+      <div class="chat-message agent">
+        <span class="agent-avatar" aria-hidden="true">${agent.avatar}</span>
+        <div>
+          <strong>${escapeHtml(agent.name)}</strong>
+          <p>${escapeHtml(message.text)}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+  log.scrollTop = log.scrollHeight;
+}
+
+function sendChatMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+
+  if (!text) {
+    return;
+  }
+
+  chatMessages.push({ from: 'user', text });
+
+  const normalizedText = text.toLowerCase();
+  const bestAgent = prototypeData.agents
+    .map((agent) => {
+      const haystack = `${agent.role} ${(agent.skills || []).join(' ')}`.toLowerCase();
+      const score = normalizedText.split(/\s+/).reduce(
+        (total, term) => total + (term.length > 3 && haystack.includes(term) ? 1 : 0),
+        0
+      );
+      return { agent, score };
+    })
+    .sort((left, right) => right.score - left.score)[0];
+
+  const responder = bestAgent && bestAgent.score > 0 ? bestAgent.agent : chatAgent();
+  selectedChatAgentId = responder.id;
+  chatMessages.push({ from: 'agent', agentId: responder.id, text: responder.chatReply });
+
+  input.value = '';
+  renderChat();
+  speakReply(responder.chatReply);
+}
+
 function renderAgentTools() {
   renderList('agent-tools-grid', prototypeData.agentTools, (tool) => {
     const unlocked = planAllows(tool.minPlan);
@@ -520,6 +640,8 @@ function renderPrototype() {
   renderPricing();
   renderPromptPacks();
   renderAgentLevels();
+  renderReportTemplates();
+  renderChat();
   renderAgentTools();
   renderQaAgents();
   renderAutonomyMatrix();
@@ -544,8 +666,14 @@ function renderPrototype() {
 
     return `
     <article class="agent-card">
-      <h3>${escapeHtml(agent.name)}</h3>
+      <div class="agent-card__identity">
+        <span class="agent-avatar large" aria-hidden="true">${agent.avatar}</span>
+        <h3>${escapeHtml(agent.name)}</h3>
+      </div>
       <p>${escapeHtml(agent.role)}</p>
+      <div class="skill-list">
+        ${(agent.skills || []).map((skill) => `<span class="pill">${escapeHtml(skill)}</span>`).join('')}
+      </div>
       <div class="agent-meta">
         <span class="pill">${escapeHtml(level.name)} · ${escapeHtml(level.modelTier)}</span>
         <span class="cost">${adjustedCost.toFixed(2).replace('.', ',')} EUR</span>
@@ -708,6 +836,12 @@ async function start() {
       demoAccountCreated = true;
       renderPrototype();
       document.getElementById('prepare-campaign').focus();
+    });
+    document.getElementById('chat-send').addEventListener('click', sendChatMessage);
+    document.getElementById('chat-input').addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        sendChatMessage();
+      }
     });
     document.getElementById('prepare-campaign').addEventListener('click', () => {
       if (!demoAccountCreated) {

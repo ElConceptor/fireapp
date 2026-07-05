@@ -10,6 +10,7 @@ const requiredFiles = [
   'src/data/prototype-data.json',
   'docs/agentic-marketing-saas-architecture.md',
   'docs/data-hub-model.md',
+  'docs/consulting-reports-and-chat.md',
   'docs/critical-review-and-mitigations.md',
   'docs/demo-campaign-scenario.md',
   'docs/monetization-v1.md',
@@ -74,7 +75,7 @@ assert(
   'mission.defaultUsageRate must be a number between 0 and 1.'
 );
 
-for (const collectionName of ['workflow', 'journeys', 'intakeQuestions', 'queryExamples', 'agents', 'modules', 'dataHubItems', 'decisions', 'modelRouting', 'artifacts', 'integrations', 'pricingPlans', 'agentLevels', 'promptPacks', 'agentTools', 'qaAgents', 'autonomyLevels', 'securityControls', 'agenda']) {
+for (const collectionName of ['workflow', 'journeys', 'intakeQuestions', 'queryExamples', 'agents', 'modules', 'dataHubItems', 'decisions', 'modelRouting', 'artifacts', 'integrations', 'pricingPlans', 'agentLevels', 'promptPacks', 'agentTools', 'qaAgents', 'autonomyLevels', 'securityControls', 'reportTemplates', 'agenda']) {
   assert(Array.isArray(prototypeData[collectionName]), `${collectionName} must be an array.`);
   assert(prototypeData[collectionName].length > 0, `${collectionName} must not be empty.`);
 }
@@ -120,6 +121,19 @@ for (const agent of prototypeData.agents) {
   assertNonEmptyString(agent.name, `agents.${agent.id}.name`);
   assertNonEmptyString(agent.modelTier, `agents.${agent.id}.modelTier`);
   assert(typeof agent.unitCost === 'number' && agent.unitCost >= 0, `agents.${agent.id}.unitCost must be positive.`);
+  assertNonEmptyString(agent.avatar, `agents.${agent.id}.avatar`);
+  assertNonEmptyString(agent.greeting, `agents.${agent.id}.greeting`);
+  assertNonEmptyString(agent.chatReply, `agents.${agent.id}.chatReply`);
+  assert(Array.isArray(agent.skills) && agent.skills.length >= 3, `agents.${agent.id}.skills must list at least 3 consulting skills.`);
+}
+
+assertUniqueIds(prototypeData.reportTemplates, 'reportTemplates');
+
+for (const report of prototypeData.reportTemplates) {
+  assertNonEmptyString(report.framework, `reportTemplates.${report.id}.framework`);
+  assertNonEmptyString(report.description, `reportTemplates.${report.id}.description`);
+  assert(planIds.has(report.minPlan), `reportTemplates.${report.id}.minPlan references unknown plan ${report.minPlan}.`);
+  assert(Array.isArray(report.sections) && report.sections.length >= 3, `reportTemplates.${report.id}.sections must have at least 3 sections.`);
 }
 
 for (const artifact of prototypeData.artifacts) {

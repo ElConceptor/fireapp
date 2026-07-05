@@ -23,6 +23,9 @@ d action, avec validation humaine et suivi strict des couts.
 - Revue critique par reseau d agents et mitigations dans
   `docs/critical-review-and-mitigations.md`; outils agents, autonomie par
   module, reseau QA, registre securite et jauge credits ajoutes.
+- Rapports consulting (Minto, TAM/SAM/SOM, Porter, SWOT, business case) et
+  chat humain-agents avec avatars et vocal dans
+  `docs/consulting-reports-and-chat.md`.
 - Scripts projet:
   - `npm run lint`: valide la base propre;
   - `npm run build`: copie le prototype dans `dist/`;

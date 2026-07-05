@@ -300,6 +300,16 @@
       "query": "landing page",
       "expectedCollection": "agentTools",
       "expectedId": "landing-builder"
+    },
+    {
+      "query": "market sizing tam",
+      "expectedCollection": "reportTemplates",
+      "expectedId": "report-market-sizing"
+    },
+    {
+      "query": "swot strategie",
+      "expectedCollection": "reportTemplates",
+      "expectedId": "report-swot"
     }
   ],
   "agentTools": [
@@ -452,30 +462,102 @@
     {
       "id": "orchestrator",
       "name": "Orchestrateur principal",
+      "avatar": "🎯",
       "role": "Decoupe les missions, assigne les agents, gere les validations et consolide les livrables.",
       "modelTier": "Premium",
-      "unitCost": 0.42
+      "unitCost": 0.42,
+      "skills": ["Structuration MECE", "Synthese executive", "Arbitrage budget", "Pyramide de Minto"],
+      "greeting": "Bonjour, je coordonne votre equipe IA. Dites-moi votre objectif et je repartis le travail entre les agents.",
+      "chatReply": "Je structure votre demande en pyramide de Minto: conclusion d abord, puis 3 arguments cles. Je cree les taches pour l equipe et je vous soumets chaque decision sensible avant execution."
     },
     {
       "id": "product-agent",
       "name": "Agent produit",
+      "avatar": "📦",
       "role": "Interroge le souscripteur, lit les documents et formalise la proposition de valeur.",
       "modelTier": "Intermediaire",
-      "unitCost": 0.08
+      "unitCost": 0.08,
+      "skills": ["Value proposition design", "Jobs-to-be-done", "Analyse SWOT", "Benchmark fonctionnel"],
+      "greeting": "Je suis votre analyste produit. Partagez vos documents et je formalise votre proposition de valeur.",
+      "chatReply": "J analyse vos documents avec la grille jobs-to-be-done et je produis un SWOT structure. Premiere hypothese: votre differenciateur principal merite un test de positionnement aupres de 3 personas."
     },
     {
       "id": "market-agent",
       "name": "Agent marche",
+      "avatar": "📊",
       "role": "Analyse concurrents, segments, objections, canaux et tendances exploitables.",
       "modelTier": "Recherche",
-      "unitCost": 0.16
+      "unitCost": 0.16,
+      "skills": ["Market sizing TAM/SAM/SOM", "5 forces de Porter", "Analyse concurrentielle", "Segmentation ICP"],
+      "greeting": "Je suis votre analyste marche. Je peux dimensionner votre marche et cartographier vos concurrents.",
+      "chatReply": "Je demarre un market sizing TAM/SAM/SOM avec sources citees, puis une analyse Porter pour evaluer l intensite concurrentielle. Vous recevrez une carte 2x2 des concurrents avec les espaces blancs exploitables."
     },
     {
       "id": "campaign-agent",
       "name": "Agent campagne",
+      "avatar": "🚀",
       "role": "Prepare messages, audiences, calendrier, budget et variantes creatives.",
       "modelTier": "Economique",
-      "unitCost": 0.05
+      "unitCost": 0.05,
+      "skills": ["Copywriting AIDA", "Test A/B", "Plan media", "Funnel AARRR"],
+      "greeting": "Je suis votre stratege campagne. Objectif, budget, et je construis votre plan multicanal.",
+      "chatReply": "Je construis un funnel AARRR avec 5 variantes de message en structure AIDA. Chaque variante sera testee en A/B et le budget reparti selon le cout par lead observe. Validation requise avant toute publication."
+    }
+  ],
+  "reportTemplates": [
+    {
+      "id": "report-executive-summary",
+      "name": "Executive Summary",
+      "framework": "Pyramide de Minto",
+      "description": "Synthese une page pour le comite de direction: conclusion, arguments, preuves et prochaines actions.",
+      "minPlan": "starter",
+      "keywords": ["executive", "synthese", "direction", "minto"],
+      "sections": ["Conclusion principale", "3 arguments cles", "Preuves et donnees", "Decisions demandees"]
+    },
+    {
+      "id": "report-market-sizing",
+      "name": "Market Sizing",
+      "framework": "TAM / SAM / SOM",
+      "description": "Dimensionnement du marche adressable avec hypotheses sourcees et scenarios de penetration.",
+      "minPlan": "growth",
+      "keywords": ["marche", "tam", "sam", "som", "sizing"],
+      "sections": ["TAM avec sources", "SAM par segment", "SOM 3 ans", "Hypotheses et sensibilite"]
+    },
+    {
+      "id": "report-competitive-landscape",
+      "name": "Competitive Landscape",
+      "framework": "5 forces de Porter + matrice 2x2",
+      "description": "Cartographie concurrentielle, intensite du marche et espaces blancs de positionnement.",
+      "minPlan": "growth",
+      "keywords": ["concurrents", "porter", "matrice", "positionnement"],
+      "sections": ["5 forces evaluees", "Matrice 2x2 concurrents", "Espaces blancs", "Menaces et parades"]
+    },
+    {
+      "id": "report-swot",
+      "name": "SWOT Strategique",
+      "framework": "SWOT croise TOWS",
+      "description": "Forces, faiblesses, opportunites, menaces croisees en strategies actionnables.",
+      "minPlan": "starter",
+      "keywords": ["swot", "forces", "faiblesses", "strategie"],
+      "sections": ["SWOT documente", "Croisements TOWS", "Strategies prioritaires", "Quick wins 30 jours"]
+    },
+    {
+      "id": "report-gtm-business-case",
+      "name": "GTM Business Case",
+      "framework": "Scenarios + ROI",
+      "description": "Business case go-to-market avec 3 scenarios budgetaires, ROI attendu et risques.",
+      "minPlan": "scale",
+      "keywords": ["business case", "roi", "scenarios", "gtm"],
+      "sections": ["3 scenarios budget", "ROI et payback", "Risques et mitigations", "KPI de pilotage"]
+    },
+    {
+      "id": "report-campaign-performance",
+      "name": "Campaign Performance Review",
+      "framework": "Funnel AARRR + cohortes",
+      "description": "Rapport mensuel de performance: leads, CPL, conversion par canal et recommandations.",
+      "minPlan": "growth",
+      "keywords": ["performance", "leads", "cpl", "rapport", "kinsley"],
+      "sections": ["KPI vs objectifs", "Analyse par canal", "Cohortes et tendances", "Recommandations chiffrees"]
     }
   ],
   "modules": [

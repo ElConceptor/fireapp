@@ -51,8 +51,13 @@ function searchableRecords() {
     id: tool.id,
     text: `${tool.name} ${(tool.keywords || []).join(' ')} ${tool.purpose} ${tool.governance}`
   }));
+  const reportTemplates = data.reportTemplates.map((report) => ({
+    collection: 'reportTemplates',
+    id: report.id,
+    text: `${report.name} ${report.framework} ${(report.keywords || []).join(' ')} ${report.description}`
+  }));
 
-  return modules.concat(agents, decisions, artifacts, integrations, promptPacks, agentTools);
+  return modules.concat(agents, decisions, artifacts, integrations, promptPacks, agentTools, reportTemplates);
 }
 
 function queryRecords(query) {
@@ -88,6 +93,12 @@ const requiredTargets = [
   'agent-level-selector',
   'agent-tools-grid',
   'qa-agents-grid',
+  'report-templates',
+  'agent-picker',
+  'chat-log',
+  'chat-input',
+  'chat-send',
+  'voice-toggle',
   'autonomy-matrix',
   'security-controls',
   'credit-used-bar',
@@ -142,6 +153,15 @@ assert(data.qaAgents.some((agent) => agent.id === 'qa-redteam'), 'QA network mus
 assert(data.autonomyLevels.length >= 3, 'Autonomy must range from manual to autonomous.');
 for (const module of data.modules) {
   assert(data.autonomyLevels.some((level) => level.id === module.autonomy), `Module ${module.id} has invalid autonomy level.`);
+}
+
+assert(data.reportTemplates.length >= 5, 'Consulting report library must cover the core frameworks.');
+for (const requiredReport of ['report-executive-summary', 'report-market-sizing', 'report-swot', 'report-competitive-landscape']) {
+  assert(data.reportTemplates.some((report) => report.id === requiredReport), `Missing required report template: ${requiredReport}.`);
+}
+
+for (const agent of data.agents) {
+  assert(agent.avatar && agent.greeting && agent.chatReply, `Agent ${agent.id} must support chat with avatar, greeting and reply.`);
 }
 
 assert(data.securityControls.length >= 6, 'Security controls must cover isolation, auth, audit, injection, outbound and secrets.');

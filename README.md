@@ -17,6 +17,7 @@ La vision produit, l architecture, la securite, les modules et la feuille de rou
 sont decrits dans:
 
 - [docs/agentic-marketing-saas-architecture.md](docs/agentic-marketing-saas-architecture.md)
+- [docs/consulting-reports-and-chat.md](docs/consulting-reports-and-chat.md)
 - [docs/critical-review-and-mitigations.md](docs/critical-review-and-mitigations.md)
 - [docs/data-hub-model.md](docs/data-hub-model.md)
 - [docs/demo-campaign-scenario.md](docs/demo-campaign-scenario.md)

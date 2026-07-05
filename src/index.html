@@ -22,6 +22,8 @@
       <nav aria-label="Navigation principale">
         <a href="#pricing">Plans</a>
         <a href="#prompts">Prompts</a>
+        <a href="#reports">Rapports</a>
+        <a href="#chat">Chat agents</a>
         <a href="#intake">Intake</a>
         <a href="#demo-account">Compte demo</a>
         <a href="#campaign">Campagne</a>
@@ -86,6 +88,43 @@
           </p>
         </div>
         <div id="prompt-packs" class="prompt-grid"></div>
+      </section>
+
+      <section id="reports" class="section">
+        <div class="section-title">
+          <p class="eyebrow">Analyses & rapports consulting</p>
+          <h2>Des livrables de niveau cabinet de conseil.</h2>
+          <p>
+            L equipe marketing IA maitrise les frameworks de conseil: Minto,
+            TAM/SAM/SOM, Porter, SWOT/TOWS, business case ROI. Chaque rapport est
+            structure, source et prêt pour un comite de direction.
+          </p>
+        </div>
+        <div id="report-templates" class="report-grid"></div>
+      </section>
+
+      <section id="chat" class="section split">
+        <article class="panel">
+          <p class="eyebrow">Discuter avec l equipe IA</p>
+          <h2>Chat et vocal avec vos agents.</h2>
+          <p>
+            Des la souscription, les utilisateurs echangent avec les agents.
+            Choisissez un agent, posez votre question; activez la voix pour
+            entendre la reponse.
+          </p>
+          <div id="agent-picker" class="agent-picker" role="group" aria-label="Choisir un agent"></div>
+          <label class="voice-toggle">
+            <input id="voice-toggle" type="checkbox">
+            <span>Reponse vocale (synthese)</span>
+          </label>
+        </article>
+        <article class="panel chat-panel">
+          <div id="chat-log" class="chat-log" aria-live="polite"></div>
+          <div class="query-row">
+            <input id="chat-input" type="text" placeholder="Ex: dimensionne mon marche, prepare un SWOT...">
+            <button id="chat-send" class="button primary" type="button">Envoyer</button>
+          </div>
+        </article>
       </section>
 
       <section id="intake" class="section split">
