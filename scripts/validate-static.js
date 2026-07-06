@@ -5,6 +5,7 @@ const { execFileSync } = require('child_process');
 const root = path.resolve(__dirname, '..');
 const requiredFiles = [
   'AGENTS.md',
+  'vercel.json',
   '.github/workflows/ci.yml',
   '.github/pull_request_template.md',
   'src/index.html',
