@@ -328,15 +328,20 @@ function serveStatic(request, response, url) {
   });
 }
 
-function createApiServer(options = {}) {
-  const db = openDatabase(options.dbPath);
+function createRequestHandler(db, options = {}) {
+  const apiOnly = Boolean(options.apiOnly);
 
-  const server = http.createServer(async (request, response) => {
+  return async function handleRequest(request, response) {
     const url = new URL(request.url, `http://${request.headers.host || 'localhost'}`);
 
     try {
       if (url.pathname.startsWith('/api/')) {
         await handleApi(db, request, response, url);
+        return;
+      }
+
+      if (apiOnly) {
+        sendJson(response, 404, { error: 'Route inconnue.' });
         return;
       }
 
@@ -349,7 +354,12 @@ function createApiServer(options = {}) {
     } catch (error) {
       sendJson(response, 400, { error: error.message });
     }
-  });
+  };
+}
+
+function createApiServer(options = {}) {
+  const db = openDatabase(options.dbPath);
+  const server = http.createServer(createRequestHandler(db));
 
   return { server, db };
 }
@@ -364,4 +374,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { createApiServer };
+module.exports = { createApiServer, createRequestHandler, handleApi };

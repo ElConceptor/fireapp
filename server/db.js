@@ -8,8 +8,24 @@ function loadContract() {
   return JSON.parse(fs.readFileSync(CONTRACT_PATH, 'utf8'));
 }
 
+function resolveDbPath(dbPath) {
+  if (dbPath) {
+    return dbPath;
+  }
+
+  if (process.env.DB_PATH) {
+    return process.env.DB_PATH;
+  }
+
+  if (process.env.VERCEL) {
+    return '/tmp/app.db';
+  }
+
+  return path.resolve(__dirname, '..', 'data', 'app.db');
+}
+
 function openDatabase(dbPath) {
-  const resolvedPath = dbPath || process.env.DB_PATH || path.resolve(__dirname, '..', 'data', 'app.db');
+  const resolvedPath = resolveDbPath(dbPath);
 
   if (resolvedPath !== ':memory:') {
     fs.mkdirSync(path.dirname(resolvedPath), { recursive: true });
@@ -71,4 +87,4 @@ function recordAudit(db, tenantId, actor, action) {
   db.prepare('INSERT INTO audit_events (tenant_id, actor, action) VALUES (?, ?, ?)').run(tenantId, actor, action);
 }
 
-module.exports = { openDatabase, loadContract, recordAudit };
+module.exports = { openDatabase, resolveDbPath, loadContract, recordAudit };

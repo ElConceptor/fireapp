@@ -1,4 +1,5 @@
 const DATA_URL = './data/prototype-data.json';
+const TOKEN_STORAGE_KEY = 'saas_token';
 
 let prototypeData = null;
 let intakeAnswers = {};
@@ -12,6 +13,9 @@ let chatMessages = [];
 let missionState = 'idle';
 let missionTaskStatuses = {};
 let auditEvents = [];
+let apiToken = null;
+let apiRuntime = null;
+let apiMode = 'local';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -79,6 +83,87 @@ function applyPlanConstraints() {
   if (selectedLevel().rank > maxLevelForPlan(plan).rank) {
     selectedAgentLevelId = plan.maxAgentLevel;
   }
+}
+
+async function apiRequest(method, pathname, body) {
+  const response = await fetch(pathname, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(apiToken ? { Authorization: `Bearer ${apiToken}` } : {})
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+
+  const data = await response.json().catch(() => ({}));
+  return { ok: response.ok, status: response.status, data };
+}
+
+function syncRuntimeFromApi() {
+  if (!apiRuntime) {
+    return;
+  }
+
+  selectedPlanId = apiRuntime.plan.id;
+  const runtimeModules = new Map(apiRuntime.modules.map((module) => [module.id, module]));
+
+  prototypeData.modules.forEach((module) => {
+    const runtimeModule = runtimeModules.get(module.id);
+
+    if (!runtimeModule) {
+      return;
+    }
+
+    module.enabled = runtimeModule.enabled;
+    module.autonomy = runtimeModule.autonomy;
+  });
+
+  applyPlanConstraints();
+}
+
+async function loadApiRuntime() {
+  if (!apiToken) {
+    return false;
+  }
+
+  const result = await apiRequest('GET', '/api/runtime');
+
+  if (!result.ok) {
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    apiToken = null;
+    apiRuntime = null;
+    apiMode = 'local';
+    return false;
+  }
+
+  apiRuntime = result.data;
+  apiMode = 'api';
+  syncRuntimeFromApi();
+  demoAccountCreated = true;
+  return true;
+}
+
+async function createDemoAccount() {
+  const customer = prototypeData.demoCustomer;
+  const result = await apiRequest('POST', '/api/auth/register', {
+    companyName: customer.companyName,
+    email: `demo-${Date.now()}@acme-sales.test`,
+    password: 'demopassword1',
+    planId: customer.planId || selectedPlanId
+  });
+
+  if (result.ok) {
+    apiToken = result.data.token;
+    localStorage.setItem(TOKEN_STORAGE_KEY, apiToken);
+    await loadApiRuntime();
+    recordAudit(`Compte reel cree via API (${customer.companyName}).`);
+    demoAccountCreated = true;
+    return;
+  }
+
+  demoAccountCreated = true;
+  apiMode = 'local';
+  recordAudit('Compte demo local (API indisponible ou erreur).');
 }
 
 function autonomyById(autonomyId) {
@@ -267,14 +352,17 @@ function renderDemoAccount() {
   }
 
   const customer = prototypeData.demoCustomer;
+  const tenantName = apiRuntime ? apiRuntime.tenant.name : customer.companyName;
+  const planName = apiRuntime ? apiRuntime.plan.name : customer.plan;
   target.className = 'account-card';
   target.innerHTML = `
-    <h3>${escapeHtml(customer.companyName)}</h3>
+    <h3>${escapeHtml(tenantName)}</h3>
     <p>${escapeHtml(customer.product)}</p>
+    <p><span class="pill ${apiMode === 'api' ? 'pill-success' : ''}">${apiMode === 'api' ? 'Mode API actif' : 'Mode demo local'}</span></p>
     <dl class="account-meta">
       <div>
         <dt>Plan</dt>
-        <dd>${escapeHtml(customer.plan)}</dd>
+        <dd>${escapeHtml(planName)}</dd>
       </div>
       <div>
         <dt>Objectif</dt>
@@ -978,6 +1066,8 @@ async function start() {
     prototypeData = clone(await response.json());
     selectedPlanId = prototypeData.demoCustomer.planId || prototypeData.pricingPlans[0].id;
     selectedAgentLevelId = maxLevelForPlan(selectedPlan()).id;
+    apiToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+    await loadApiRuntime();
     applyPlanConstraints();
     document.getElementById('mission-title').textContent = prototypeData.mission.title;
     document.getElementById('mission-summary').textContent = prototypeData.mission.summary;
@@ -994,9 +1084,8 @@ async function start() {
       renderPrototype();
       document.getElementById('artifact-filter').focus();
     });
-    document.getElementById('create-demo-account').addEventListener('click', () => {
-      demoAccountCreated = true;
-      recordAudit('Compte demo Acme Sales Academy cree.');
+    document.getElementById('create-demo-account').addEventListener('click', async () => {
+      await createDemoAccount();
       renderPrototype();
       document.getElementById('prepare-campaign').focus();
     });

@@ -6,6 +6,7 @@ const root = path.resolve(__dirname, '..');
 const requiredFiles = [
   'AGENTS.md',
   'vercel.json',
+  'api/[...path].js',
   '.github/workflows/ci.yml',
   '.github/pull_request_template.md',
   'src/index.html',
